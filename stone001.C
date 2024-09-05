@@ -19,7 +19,7 @@ void GenerateGaussianValues(TH1D *hist, double mean, double stdDev) {
 }
 
 // Chi-squared minimization function
-void fcn(int &npar, double *gin, double &f, double *par, int iflag) {
+void fcn(int &npar, double *gin, double &ff, double *par, int iflag) {
     TH1D *hist = static_cast<TH1D*>(gDirectory->Get("hist"));
     if (!hist) {
         std::cerr << "Error: Histogram not found!" << std::endl;
@@ -35,10 +35,10 @@ void fcn(int &npar, double *gin, double &f, double *par, int iflag) {
         double fit = par[0] * TMath::Gaus(x, par[1], par[2]);
 
         if (data > 0) {
-            chi2 += std::pow((fit - data), 2) / data;
+            chi2 += TMath::Power((fit - data), 2) / data;
         }
     }
-    f = chi2;
+    ff = chi2;
 }
 
 // Perform the fit using Minuit
@@ -90,7 +90,7 @@ int main() {
     double errors[3];
 
     // Perform the fit
-    TF1 *fitFunc = new TF1("fitFunc", "[0]*TMath::Gaus(x,[1],[2])", -10, 10);
+    TF1 *fitFunc = new TF1("fitFunc", "[0]*TMath::Gaus(x,[1],[2])", -1e3, 1e3);
     PerformSingleFit(fitFunc, params, errors);
 
     // Plot the results
