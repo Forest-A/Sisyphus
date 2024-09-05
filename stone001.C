@@ -13,7 +13,7 @@ TRandom3 *gRand = new TRandom3(123);
 
 // Generate Gaussian values and fill histogram
 void GenerateGaussianValues(TH1D *hist, double mean, double stdDev) {
-	for (int i = 0; i < 1e5; i++) {
+	for (int ii = 0; ii < 1e5; ii++) {
 		 hist->Fill(gRand->Gaus(mean, stdDev));
 	}
 }
@@ -29,9 +29,9 @@ void fcn(int &npar, double *gin, double &f, double *par, int iflag) {
     int nBins = hist->GetNbinsX();
     double chi2 = 0.0;
 
-    for (int i = 1; i <= nBins; ++i) {
-        double x = hist->GetBinCenter(i);
-        double data = hist->GetBinContent(i);
+    for (int ii = 1; ii <= nBins; ii++) {
+        double x = hist->GetBinCenter(ii);
+        double data = hist->GetBinContent(ii);
         double fit = par[0] * TMath::Gaus(x, par[1], par[2]);
 
         if (data > 0) {
@@ -53,8 +53,8 @@ void PerformSingleFit(TF1* fitFunc, double* params, double* errors) {
     Minuit.Migrad();  // Perform the minimization
 
     // Retrieve fitted parameters
-    for (int i = 0; i < 3; ++i) {
-        Minuit.GetParameter(i, params[i], errors[i]);
+    for (int ii = 0; ii < 3; ii++) {
+        Minuit.GetParameter(ii, params[ii], errors[ii]);
     }
 
     // Update the fit function parameters
