@@ -1,3 +1,4 @@
+#include <iostream>
 #include <TFile.h>
 #include <TH1D.h>
 #include <TF1.h>
@@ -6,22 +7,18 @@
 #include <TMinuit.h>
 #include <TRandom3.h>
 #include <TStyle.h>
-#include <TList.h>
-#include <TLegend.h>
+#include <TObjString.h>
 #include "/home/motoko/TKI_Comparison/style/style.h"
 
-// Global pointer to the random number generator, histogram, and file
+// Global pointer to the random number generator and the histogram
 TRandom3 *gRand = new TRandom3(123);
 TH1D *gHist = nullptr;
-TFile *outputFile = nullptr;
-TList *plotList = nullptr;
 
 // Generate Gaussian values and fill histogram
 void GenerateGaussianValues(TH1D *hist, const double mean, const double stdDev) {
-  
-    for (int ii = 0; ii < 1e5; ii++) {
-        hist->Fill(gRand->Gaus(mean, stdDev));
-    }
+	for (int ii = 0; ii < 1e5; ii++) {
+		 hist->Fill(gRand->Gaus(mean, stdDev));
+	}
 }
 
 // Chi-squared minimization function
@@ -48,7 +45,7 @@ void fcn(int &npar, double *gin, double &ff, double *par, int iflag) {
 }
 
 // Perform the fit using Minuit
-double SingleFit(TF1* fitFunc, double* params, double* errors, double& chi2) {
+double SingleFit(TF1* fitFunc, double* params, double* errors, double &chi2, double &amin, double &edm, double &errdef, int &nvpar, int &nparx, int &icstat) {
 
     TMinuit Minuit(3);
     Minuit.SetFCN(fcn);
@@ -68,34 +65,33 @@ double SingleFit(TF1* fitFunc, double* params, double* errors, double& chi2) {
     fitFunc->SetParameters(params[0], params[1], params[2]);
 
     // Retrieve fitting status
-    double amin, edm, errdef;
-    int nvpar, nparx, icstat;
     Minuit.mnstat(amin, edm, errdef, nvpar, nparx, icstat);
     chi2 = amin;
 
-    return Minuit.GetStatus(); // Return fit status;
+    return Minuit.GetStatus();
 }
 
-// Plot the Gaussian fit at each iteration and save it
-void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, const double *errors, TList *list) {
-  
-    TCanvas *c1 = new TCanvas(Form("c1_iter_%d", iteration), "Gaussian Fit", 800, 600);
+
+// Plot the Gaussian fit and save it
+TCanvas* PlotGaussianFit(TH1D *hist, TF1 *fitFunc, const double *params,  const double *errors, TList *list, const int iteration) {
+    TCanvas *c1 = new TCanvas(Form("c1_%d", iteration), Form("Gaussian Fit Iteration %d", iteration), 800, 600);
     gStyle->SetOptStat(0);
 
     // Canvas Setup
     style::SetGlobalStyle();
-    style::fgkYTitleOffset=1.6;
+    style::fgkYTitleOffset=1.6;//1.2;//square
     style::IniColorCB();
 
-    Double_t currentLeft = 0.17; 
-    Double_t currentTop = 0.06; 
-    Double_t currentRight = 0.035;
-    Double_t currentBottom = 0.14;
+    Double_t currentLeft=0.17; 
+    Double_t currentTop=0.06; 
+    Double_t currentRight=0.035;
+    Double_t currentBottom=0.14;
 
     style::PadSetup(c1);
+    //cc->GetCanvas()->SetGrayscale();
 
-    gPad->SetLeftMargin(currentLeft);
-    gPad->SetRightMargin(currentRight);
+    gPad->SetLeftMargin(currentLeft);//square
+    gPad->SetRightMargin(currentRight);//0.03//square
     gPad->SetTopMargin(currentTop);
     gPad->SetBottomMargin(currentBottom);
 
@@ -103,14 +99,14 @@ void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, co
     gStyle->SetOptTitle(1);
     gStyle->SetTitleX(0.6);
     gStyle->SetTitleW(0.8);
-    gHist->SetTitle("Gaussian Fitting");
+    hist->SetTitle("Gaussian Fitting");
 
-    // Draw histogram and fit function
-    style::ResetStyle(gHist);
-    gHist->SetLineColor(kBlue);
-    gHist->SetLineWidth(3);
-    gHist->SetFillStyle(0);
-    gHist->Draw();
+    // Draw lines 
+    style::ResetStyle(hist);
+    hist->SetLineColor(kBlue);
+    hist->SetLineWidth(3);
+    hist->SetFillStyle(0);
+    hist->Draw();
     
     fitFunc->SetLineColor(kRed);
     fitFunc->SetLineWidth(3);
@@ -122,47 +118,36 @@ void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, co
     const double y0 = 0.6;
     const double x1 = x0 + 0.34;
     TLegend *lg = new TLegend(x0, y0, x1, 0.92);
-    style::ResetStyle(lg, 0.18, 0.68);
+    style::ResetStyle(lg,0.18,0.68);
     lg->SetTextAlign(12);
 
-    lg->AddEntry(gHist, "Generated Gaussian", "l");
+    lg->AddEntry(hist, "Generated Gaussian", "l");
     lg->AddEntry(fitFunc, "Fitted Gaussian", "l");
 
     lg->Draw();
     
-    // Axis labels
-    gHist->GetXaxis()->SetTitle("x-axis");
-    gHist->GetYaxis()->SetTitle("y-axis");
+    // Axis label
+    hist->GetXaxis()->SetTitle("x-axis");
+    hist->GetYaxis()->SetTitle("y-axis");
 
-    // Save the list to the ROOT file
-    list->Add(c1);
-
-    // Save the list to the ROOT file
-    list->Write(Form("Plot_Iteration_%d", iteration), TObject::kOverwrite);
-    
-    delete lg;  // Deleting legend
+    return c1;
 }
 
 // Perform iterative fitting with convergence check
 void IterativeFit(TF1* fitFunc, double* params, double* errors, const int maxIterations, const double convergenceThreshold) {
-  
+    
     double previousChi2 = 1e10;
     double currentChi2 = 0.0;
 
-    // Create a ROOT file to store results
-    outputFile = new TFile("GaussianFits.root", "RECREATE");
-    if (!outputFile || outputFile->IsZombie()) {
-        std::cerr << "Error: Cannot create ROOT file." << std::endl;
-        return;
-    }
-    plotList = new TList();
+    // Create a TList
+    TList *list = new TList();
 
+    double amin, edm, errdef;
+    int nvpar, nparx, icstat;
+    
     for (int ii = 0; ii < maxIterations; ii++) {
         // Perform a single fit
-        double status = SingleFit(fitFunc, params, errors, currentChi2);
-
-        // Plot and save the results for this iteration
-        PlotGaussianFit(ii + 1, fitFunc, params, errors, plotList);
+        double status = SingleFit(fitFunc, params, errors, currentChi2, amin, edm, errdef, nvpar, nparx, icstat);
 
         // Check for convergence
         if (status != 0) {
@@ -176,11 +161,27 @@ void IterativeFit(TF1* fitFunc, double* params, double* errors, const int maxIte
             break;
         }
 
-        previousChi2 = currentChi2;	
+        previousChi2 = currentChi2;
+	
+	// Save
+        TString table = Form("Iteration %d\namin = %f\nedm = %f\nerrdef = %f\nnvpar = %d\nnparx = %d\nicstat = %d\n", 
+                             ii + 1, amin, edm, errdef, nvpar, nparx, icstat);
+        list->Add(new TObjString(Form("FitParams_Iter_%d: %s", ii + 1, table.Data())));  // Add fit parameters to list
+
+	std::cout<< "" << amin<< edm << errdef <<  nvpar << nparx << icsta << std::endl
+
+        // Save canvas with the fit plot
+        TCanvas *c1 = PlotGaussianFit(gHist, fitFunc, params, errors, list, ii + 1);
+        list->Add(c1);
+        list->SetName("FitList");
     }
-    
-    delete plotList;
-    delete outputFile;
+
+        TFile *file = new TFile("Gaussian.root", "RECREATE");
+	list->Write();  // Write the named list to the file
+	file->Close();
+	
+	delete file;
+	delete list;
 }
 
 int main() {
@@ -200,11 +201,11 @@ int main() {
 
     // Perform the fit
     TF1 *fitFunc = new TF1("fitFunc", "[0] * TMath::Gaus(x,[1],[2])", -1e3, 1e3);
+    
     IterativeFit(fitFunc, params, errors, 100, 1e-6);
+   
 
     delete fitFunc;
     delete gHist;
-    delete gRand;
-    
     return 0;
 }
