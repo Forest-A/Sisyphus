@@ -28,7 +28,7 @@ void fcn(int &npar, double *gin, double &ff, double *par, int iflag) {
         return;
     }
 
-    int nBins = gHist->GetNbinsX();
+    const int nBins = gHist->GetNbinsX();
     double chi2 = 0.0;
 
     for (int ii = 1; ii <= nBins; ii++) {
@@ -44,7 +44,8 @@ void fcn(int &npar, double *gin, double &ff, double *par, int iflag) {
 }
 
 // Perform the fit using Minuit
-void PerformSingleFit(TF1* fitFunc, double* params, double* errors) {
+double SingleFit(TF1* fitFunc, double* params, double* errors, double chi2) {
+
     TMinuit Minuit(3);
     Minuit.SetFCN(fcn);
 
@@ -61,7 +62,45 @@ void PerformSingleFit(TF1* fitFunc, double* params, double* errors) {
 
     // Update the fit function parameters
     fitFunc->SetParameters(params[0], params[1], params[2]);
+
+    // Retrieve fitting status
+    double amin, edm, errdef;
+    int nvpar, nparx, icstat;
+    Minuit.mnstat(amin, edm, errdef, nvpar, nparx, icstat);
+    chi2 = amin;
+
+    return Minuit.GetStatus();
 }
+
+// Perform iterative fitting with convergence check
+void IterativeFit(TF1* fitFunc, double* params, double* errors, const int maxIterations, const double convergenceThreshold) {
+    
+    double previousChi2 = 1e10;
+    double currentChi2 = 0.0;
+
+    for (int ii = 0; ii < maxIterations; ii++) {
+        // Perform a single fit
+        double status = SingleFit(fitFunc, params, errors, currentChi2);
+
+        // Check for convergence
+        if (status != 0) {
+            std::cerr << "Fit did not converge. Status: " << status << std::endl;
+            break;
+        }
+
+        // Check if the change in chi-squared is below the threshold
+        if (TMath::Abs(previousChi2 - currentChi2) < convergenceThreshold) {
+            std::cout << "Converged after " << ii + 1 << " iterations." << std::endl;
+            break;
+        }
+
+        previousChi2 = currentChi2;
+    }
+
+    std::cout << "Final Chi-squared: " << currentChi2 << std::endl;
+}
+
+
 
 // Plot the Gaussian fit and save it
 void PlotGaussianFit(TH1D *hist, TF1 *fitFunc, const double *params,  const double *errors ) {
@@ -165,7 +204,7 @@ int main() {
 
     // Perform the fit
     TF1 *fitFunc = new TF1("fitFunc", "[0] * TMath::Gaus(x,[1],[2])", -1e3, 1e3);
-    PerformSingleFit(fitFunc, params, errors);
+    IterativeFit(fitFunc, params, errors, 100, 1e-6);
 
     // Plot and save the results
     PlotGaussianFit(gHist, fitFunc, params, errors);
