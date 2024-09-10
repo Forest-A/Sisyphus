@@ -8,7 +8,7 @@
 #include <TStyle.h>
 #include <TLegend.h>
 #include <TSystem.h>
-#include "/home/motoko/TKI_Comparison/style/style.h"
+#include "style.h"
 
 // Global pointers to the random number generator and histogram
 TRandom3 gRand(123);
@@ -81,7 +81,7 @@ int SingleFit(TF1* fitFunc, double* params, double* errors, double& chi2) {
 }
 
 // Plot the Gaussian fit at each iteration and save it
-void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, const double *errors, TFile *outputFile) {
+void PlotGaussianFit(const int iteration,  TF1 *fitFunc, const double *params, const double *errors, TFile *outputFile) {
   
     // Use the global canvas
     if (!gCanvas) {
