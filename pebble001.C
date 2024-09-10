@@ -82,6 +82,7 @@ int SingleFit(TF1* fitFunc, double* params, double* errors, double& chi2) {
 
 // Plot the Gaussian fit at each iteration and save it
 void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, const double *errors, TFile *outputFile) {
+  
     // Use the global canvas
     if (!gCanvas) {
       gCanvas = new TCanvas(Form("c1_iter_%d", iteration), "Gaussian Fit", 800, 600);
@@ -135,6 +136,7 @@ void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, co
 
 // Perform iterative fitting with convergence check
 void IterativeFit(TF1* fitFunc, double* params, double* errors, const int maxIterations, const double convergenceThreshold, TFile *outputFile) {
+  
     double previousChi2 = 1e10;
     double currentChi2 = 0.0;
 
