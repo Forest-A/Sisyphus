@@ -130,7 +130,7 @@ void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, co
     outputFile->cd();
     gCanvas->Write(Form("GaussianFit_Iteration_%d", iteration), TObject::kOverwrite);
     
-    delete lg;  // Deleting legend
+    delete lg; 
 }
 
 // Perform iterative fitting with convergence check
@@ -230,7 +230,7 @@ int main() {
     delete ff;
     delete fitFunc;
     delete gHist;
-    delete gCanvas; // Delete global canvas
+    delete gCanvas; 
 
     return 0;
 }
