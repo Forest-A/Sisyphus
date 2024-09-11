@@ -14,12 +14,11 @@
 // Global pointers to the random number generator and histogram
 TRandom3 gRand(123);
 TH1D *gHist = nullptr;
-TCanvas *gCanvas = nullptr;  // Global canvas pointer
-TList *plotList = nullptr;   // Global plot list
+TCanvas *gCanvas = nullptr;
+TList *plotList = nullptr;  
 
 // Generate Gaussian values and fill histogram
 void GenerateGaussianValues(TH1D *hist, const double mean, const double stdDev) {
-  
     if (!hist) {
         std::cerr << "Error: Histogram not properly initialized!" << std::endl;
         return;
@@ -32,7 +31,6 @@ void GenerateGaussianValues(TH1D *hist, const double mean, const double stdDev) 
 
 // Chi-squared minimization function
 void fcn(int &npar, double *gin, double &ff, double *par, int iflag) {
-  
     if (!gHist) {
         std::cerr << "Error: Histogram not found!" << std::endl;
         return;
@@ -55,7 +53,6 @@ void fcn(int &npar, double *gin, double &ff, double *par, int iflag) {
 
 // Perform the fit using Minuit
 int SingleFit(TF1* fitFunc, double* params, double* errors, double& chi2) {
-  
     TMinuit Minuit(3);
     Minuit.SetFCN(fcn);
 
@@ -79,17 +76,19 @@ int SingleFit(TF1* fitFunc, double* params, double* errors, double& chi2) {
     Minuit.mnstat(amin, edm, errdef, nvpar, nparx, icstat);
     chi2 = amin;
 
-    return Minuit.GetStatus(); // Return fit status;
+    return Minuit.GetStatus();  // Return fit status
 }
 
 // Plot the Gaussian fit at each iteration and store it in the TList
 void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, const double *errors, TList *list) {
-  
-    // Create a new canvas for each iteration
-    TCanvas *iterCanvas = new TCanvas(Form("iter_%d", iteration), "Gaussian Fit", 800, 600);
+    if (!gCanvas) {
+      gCanvas = new TCanvas(Form("c1_iter_%d", iteration), "Gaussian Fit", 800, 600);
+    }
+    else {
+        gCanvas->cd();  // Make sure to use the existing canvas
+    }
 
-    iterCanvas->cd();  // Ensure it's the active canvas
-    iterCanvas->Clear();  // Clear the canvas for new plot
+    gCanvas->Clear();  // Clear the canvas for new plot
 
     gHist->SetTitle("Gaussian Fitting");
 
@@ -122,15 +121,17 @@ void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, co
     gHist->GetXaxis()->SetTitle("x-axis");
     gHist->GetYaxis()->SetTitle("y-axis");
 
-    // Add the canvas to the TList
-    list->Add(iterCanvas);
+    // Print out the plots
+    gCanvas->Print(Form("GaussianFit_Iteration_%d.png", iteration));
 
-    delete lg;  // Clean up legend
+    // Save the canvas to the list
+    list->add(gCanvas);
+    
+    delete lg; 
 }
 
 // Perform iterative fitting with convergence check
 void IterativeFit(TF1* fitFunc, double* params, double* errors, const int maxIterations, const double convergenceThreshold, TList *list) {
-  
     double previousChi2 = 1e10;
     double currentChi2 = 0.0;
 
@@ -158,14 +159,13 @@ void IterativeFit(TF1* fitFunc, double* params, double* errors, const int maxIte
 }
 
 int main() {
-
     // Redirect ROOT output to the log file
-    Int_t status = gSystem->RedirectOutput("see.log", "w"); // "w" to overwrite the file
+    Int_t status = gSystem->RedirectOutput("see.log", "w");  // "w" to overwrite the file
     if (status != 0) {
         std::cerr << "Error: Unable to redirect output to file." << std::endl;
         return 1;
     }
-    
+
     // Create histogram
     gHist = new TH1D("hist", "Generated Gaussian Data", 100, -10, 10);
 
@@ -190,7 +190,7 @@ int main() {
     // Create a list to store plots
     plotList = new TList();
 
-    // Canvas Setup
+     // Canvas Setup
     gStyle->SetOptStat(0);
     style::SetGlobalStyle();
     style::fgkYTitleOffset = 1.6;
@@ -227,13 +227,12 @@ int main() {
 
     // Restore output to the default streams
     gSystem->RedirectOutput(0);
-    
+
     // Cleanup
     delete ff;
     delete fitFunc;
     delete gHist;
     delete gCanvas;
-    delete plotList;
-
+    
     return 0;
 }
