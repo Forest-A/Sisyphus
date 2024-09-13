@@ -33,7 +33,7 @@ void GenerateSineValue(TH1D *hist, const double amp, const double freq, const do
 
     // Acceptance-Rejection sampling to generate exactly nEvents
     while (fillEvents < nEvents) {
-        double xVal, yVal, rr;
+        const double xVal, yVal, rr;
 
         // Generate a random x-value in the range [xMin, xMax]
         xVal = gRand.Uniform(xMin, xMax);
@@ -162,7 +162,7 @@ void IterativeFit(TF1* const fitFunc, double* const params, double* const errors
 
     for (int ii = 0; ii < maxIterations; ii++) {
         // Perform a single fit
-        int status = SingleFit(fitFunc, params, errors, currentChi2);
+        const int status = SingleFit(fitFunc, params, errors, currentChi2);
 
 	// Output the chi-squared value for this iteration
         std::cout << "////////////////////////////Iteration " << ii + 1 << ": Chi2 = " << currentChi2 << "////////////////////////////" << std::endl;
@@ -202,7 +202,7 @@ void FitWithROOT(TF1* const fitFunc, double* const params, double* const errors)
 
 int main() {
     // Redirect ROOT output to the log file
-    Int_t status = gSystem->RedirectOutput("outplot/see.log", "w");  // "w" to overwrite the file
+    const Int_t status = gSystem->RedirectOutput("outplot/see.log", "w");  // "w" to overwrite the file
     if (status != 0) {
         std::cerr << "Error: Unable to redirect output to file." << std::endl;
         return 1;
@@ -235,10 +235,10 @@ int main() {
     style::fgkYTitleOffset = 1.6;
     style::IniColorCB();
 
-    Double_t currentLeft = 0.17; 
-    Double_t currentTop = 0.06; 
-    Double_t currentRight = 0.035;
-    Double_t currentBottom = 0.14;
+    const Double_t currentLeft = 0.17; 
+    const Double_t currentTop = 0.06; 
+    const Double_t currentRight = 0.035;
+    const Double_t currentBottom = 0.14;
 
     // Ensure the global canvas is created with appropriate margins
     gCanvas = new TCanvas("gCanvas", "Sine Fit", 800, 600);
