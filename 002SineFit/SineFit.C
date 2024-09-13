@@ -17,19 +17,22 @@ TH1D *gHist = nullptr;
 TCanvas *gCanvas = nullptr;
 TList *plotList = nullptr;  
 
-// Generate sine values and fill histogram
+// Generate sine values and fill histogram with exactly nEvents entries
 void GenerateSineValue(TH1D *hist, const double amp, const double freq, const double phase, const double offset) {
     if (!hist) {
         std::cerr << "Error: Histogram not properly initialized!" << std::endl;
         return;
     }
 
+    const double nEvents = 1e5;
     const double xMin = 0;
     const double xMax = 20;  // Adjust the x-range as necessary
     const double maxY = amp + offset; // Maximum possible y-value used for rejection sampling
+    
+    int fillEvents = 0;  // Counter for filled events
 
-    // Acceptance-Rejection sampling
-    for (int ii = 0; ii < 1e5; ii++) {
+    // Acceptance-Rejection sampling to generate exactly nEvents
+    while (fillEvents < nEvents) {
         double xVal, yVal, rr;
 
         // Generate a random x-value in the range [xMin, xMax]
@@ -39,14 +42,16 @@ void GenerateSineValue(TH1D *hist, const double amp, const double freq, const do
         yVal = amp * TMath::Sin(freq * xVal + phase) + offset;
 
         // Generate a random number for comparison
-        rr = gRand.Uniform(0, maxY); // Generate uniform random number in [0, maxY]
+        rr = gRand.Uniform(0, maxY); 
 
         // Acceptance criterion: accept the value if rr < yVal
         if (rr < yVal) {
             hist->Fill(xVal);
+            fillEvents++;  
         }
     }
 }
+
 
 // Chi-squared minimization function
 void fcn(int &npar, double *gin, double &ff, double *par, int iflag) {
@@ -142,7 +147,7 @@ void PlotSineFit(const int iteration, TF1 * const fitFunc, const double *params,
     gHist->GetYaxis()->SetTitle("y-axis");
 
     // Optimise scales
-    gHist->GetYaxis()->SetRangeUser(100, 800);
+    gHist->GetYaxis()->SetRangeUser(200, 1000);
     
     // Print out the plots
     gCanvas->Print(Form("outplot/SineFit_%d.png", iteration));
@@ -157,7 +162,7 @@ void IterativeFit(TF1* const fitFunc, double* const params, double* const errors
 
     for (int ii = 0; ii < maxIterations; ii++) {
         // Perform a single fit
-        double status = SingleFit(fitFunc, params, errors, currentChi2);
+        int status = SingleFit(fitFunc, params, errors, currentChi2);
 
 	// Output the chi-squared value for this iteration
         std::cout << "////////////////////////////Iteration " << ii + 1 << ": Chi2 = " << currentChi2 << "////////////////////////////" << std::endl;

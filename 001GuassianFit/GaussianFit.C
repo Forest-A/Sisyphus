@@ -137,7 +137,7 @@ void IterativeFit(TF1* fitFunc, double* params, double* errors, const int maxIte
 
     for (int ii = 0; ii < maxIterations; ii++) {
         // Perform a single fit
-        double status = SingleFit(fitFunc, params, errors, currentChi2);
+        int status = SingleFit(fitFunc, params, errors, currentChi2);
 
         // Plot and store the results for this iteration
         PlotGaussianFit(ii + 1, fitFunc, params, errors, list);
