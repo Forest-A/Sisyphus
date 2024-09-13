@@ -41,6 +41,7 @@ style::IniColorCB arleady set
         2  0.88715  -0.045  1.000 -0.886 -0.204
         3  0.88600   0.039 -0.886  1.000  0.180
         4  0.26211   0.174 -0.204  0.180  1.000
+////////////////////////////Iteration 1: Chi2 = 219.451////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
      1 Amplitude    1.23542e+02  1.00000e-01    1.00000e-01  1.00000e+04
@@ -82,6 +83,7 @@ style::IniColorCB arleady set
         2  0.88715  -0.045  1.000 -0.886 -0.204
         3  0.88600   0.039 -0.886  1.000  0.180
         4  0.26211   0.174 -0.204  0.180  1.000
+////////////////////////////Iteration 2: Chi2 = 219.451////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
      1 Amplitude    1.23541e+02  1.00000e-01    1.00000e-01  1.00000e+04
@@ -123,6 +125,7 @@ style::IniColorCB arleady set
         2  0.88715  -0.045  1.000 -0.886 -0.204
         3  0.88600   0.039 -0.886  1.000  0.180
         4  0.26211   0.174 -0.204  0.180  1.000
+////////////////////////////Iteration 3: Chi2 = 219.451////////////////////////////
 Converged after 3 iterations.
 The internal fitting function gives:
 Parameter 0: 123.541 ± 1.86616
