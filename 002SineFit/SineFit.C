@@ -33,16 +33,14 @@ void GenerateSineValue(TH1D *hist, const double amp, const double freq, const do
 
     // Acceptance-Rejection sampling to generate exactly nEvents
     while (fillEvents < nEvents) {
-        const double xVal, yVal, rr;
-
         // Generate a random x-value in the range [xMin, xMax]
-        xVal = gRand.Uniform(xMin, xMax);
+        const double xVal = gRand.Uniform(xMin, xMax);
 
         // Compute the sine value at this x-value
-        yVal = amp * TMath::Sin(freq * xVal + phase) + offset;
+        const double  yVal = amp * TMath::Sin(freq * xVal + phase) + offset;
 
         // Generate a random number for comparison
-        rr = gRand.Uniform(0, maxY); 
+        const double rr = gRand.Uniform(0, maxY); 
 
         // Acceptance criterion: accept the value if rr < yVal
         if (rr < yVal) {
