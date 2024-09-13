@@ -1,0 +1,75 @@
+style::IniColorCB creating new color
+style::IniColorCB arleady set
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Amplitude    8.04500e+03  1.00000e-01    0.00000e+00  1.00000e+04
+     2 Mean        -1.38091e-03  1.00000e-01   -1.00000e+01  1.00000e+01
+     3 Sigma        9.96117e-01  1.00000e-01    0.00000e+00  1.00000e+01
+ **********
+ **    1 **MIGRAD
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ FCN=50.8638 FROM MIGRAD    STATUS=INITIATE       12 CALLS          13 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Amplitude    8.04500e+03   1.00000e-01   2.52153e-05   4.80864e+02
+   2  Mean        -1.38091e-03   1.00000e-01   1.00002e-02   1.59482e+02
+   3  Sigma        9.96117e-01   1.00000e-01   3.34307e-02   2.84339e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=48.505 FROM MIGRAD    STATUS=CONVERGED      53 CALLS          54 TOTAL
+                     EDM=1.60735e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Amplitude    8.00553e+03   3.10492e+01   2.17704e-05   1.39240e-02
+   2  Mean        -1.46008e-03   3.15127e-03   1.08264e-06  -4.94142e-01
+   3  Sigma        9.96191e-01   2.23628e-03   2.09211e-06   9.72042e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  3    ERR DEF=1
+  9.641e+02  2.537e-04 -4.018e-02 
+  2.537e-04  9.930e-06 -3.162e-08 
+ -4.018e-02 -3.162e-08  5.001e-06 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2      3
+        1  0.57871   1.000  0.003 -0.579
+        2  0.00449   0.003  1.000 -0.004
+        3  0.57872  -0.579 -0.004  1.000
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Amplitude    8.00553e+03  1.00000e-01    0.00000e+00  1.00000e+04
+     2 Mean        -1.46008e-03  1.00000e-01   -1.00000e+01  1.00000e+01
+     3 Sigma        9.96191e-01  1.00000e-01    0.00000e+00  1.00000e+01
+ **********
+ **    1 **MIGRAD
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ FCN=48.505 FROM MIGRAD    STATUS=INITIATE       14 CALLS          15 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Amplitude    8.00553e+03   1.00000e-01   2.50260e-05   1.39242e-02
+   2  Mean        -1.46008e-03   1.00000e-01   1.00002e-02  -4.94099e-01
+   3  Sigma        9.96191e-01   1.00000e-01   3.34296e-02   9.74228e-02
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=48.505 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=8.6771e-10    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Amplitude    8.00553e+03   3.10492e+01   2.17711e-05  -2.62321e-03
+   2  Mean        -1.45987e-03   3.15127e-03   1.08262e-06  -7.20198e-02
+   3  Sigma        9.96191e-01   2.23628e-03   2.09206e-06  -5.70823e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  3    ERR DEF=1
+  9.641e+02  2.537e-04 -4.018e-02 
+  2.537e-04  9.931e-06 -3.162e-08 
+ -4.018e-02 -3.162e-08  5.001e-06 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2      3
+        1  0.57871   1.000  0.003 -0.579
+        2  0.00449   0.003  1.000 -0.004
+        3  0.57872  -0.579 -0.004  1.000
+Converged after 2 iterations.

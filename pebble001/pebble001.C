@@ -122,10 +122,10 @@ void PlotGaussianFit(const int iteration, TF1 *fitFunc, const double *params, co
     gHist->GetYaxis()->SetTitle("y-axis");
 
     // Print out the plots
-    gCanvas->Print(Form("GaussianFit_Iteration_%d.png", iteration));
+    gCanvas->Print(Form("outplot/GaussianFit_Iteration_%d.png", iteration));
 
     // Save the canvas to the list
-    list->add(gCanvas);
+    //list->Add(gCanvas);
     
     delete lg; 
 }
@@ -160,7 +160,7 @@ void IterativeFit(TF1* fitFunc, double* params, double* errors, const int maxIte
 
 int main() {
     // Redirect ROOT output to the log file
-    Int_t status = gSystem->RedirectOutput("see.log", "w");  // "w" to overwrite the file
+    Int_t status = gSystem->RedirectOutput("outplot/see.log", "w");  // "w" to overwrite the file
     if (status != 0) {
         std::cerr << "Error: Unable to redirect output to file." << std::endl;
         return 1;
@@ -181,7 +181,7 @@ int main() {
     double errors[3];
 
     // Create a ROOT file to store results
-    TFile *ff = new TFile("GaussianFits.root", "RECREATE");
+    TFile *ff = new TFile("outplot/GaussianFits.root", "RECREATE");
     if (!ff || ff->IsZombie()) {
         std::cerr << "Error: Cannot create ROOT file." << std::endl;
         return 1;
@@ -189,6 +189,7 @@ int main() {
 
     // Create a list to store plots
     plotList = new TList();
+    plotList->Add(gHist);
 
      // Canvas Setup
     gStyle->SetOptStat(0);
@@ -219,7 +220,8 @@ int main() {
     IterativeFit(fitFunc, params, errors, 100, 1e-6, plotList);
 
     // Write the list of plots to the ROOT file
-    ff->WriteObject(plotList, "GaussianFitPlots");
+    //ff->WriteObject(plotList, "GaussianFitPlots");
+    plotList->Write();
 
     // Save everything and close the file
     ff->Write(); 
