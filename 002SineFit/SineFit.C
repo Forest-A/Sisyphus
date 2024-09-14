@@ -9,6 +9,7 @@
 #include <TLegend.h>
 #include <TSystem.h>
 #include <TList.h>
+#include <TVirtualFFT.h>
 #include "style.h"
 
 // Global pointers to the random number generator and histogram
@@ -18,7 +19,7 @@ TCanvas *gCanvas = nullptr;
 TList *plotList = nullptr;  
 
 // Generate sine values and fill histogram with exactly nEvents entries
-void GenerateSineValue(TH1D *hist, const double amp, const double freq, const double phase, const double offset) {
+void GenerateSineValue(TH1D *const hist, const double amp, const double freq, const double phase, const double offset) {
     if (!hist) {
         std::cerr << "Error: Histogram not properly initialized!" << std::endl;
         return;
@@ -26,7 +27,7 @@ void GenerateSineValue(TH1D *hist, const double amp, const double freq, const do
 
     const double nEvents = 1e5;
     const double xMin = 0;
-    const double xMax = 20;  // Adjust the x-range as necessary
+    const double xMax = 40;  // Adjust the x-range as necessary
     const double maxY = amp + offset; // Maximum possible y-value used for rejection sampling
     
     int fillEvents = 0;  // Counter for filled events
@@ -186,17 +187,128 @@ void IterativeFit(TF1* const fitFunc, double* const params, double* const errors
 
 // Fit with ROOT's internal fitting function and print the results
 void FitWithROOT(TF1* const fitFunc, double* const params, double* const errors) {
+    // Perform the fit using ROOT's internal fitting function
     gHist->Fit(fitFunc, "Q");
-    
-    std::cout << "The internal fitting function gives:" << std::endl;
-    
+
+    std::cout << "The internal fitting function results:" << std::endl;
+
     // Retrieve and print the fit results
     for (int ii = 0; ii < 4; ii++) {
         params[ii] = fitFunc->GetParameter(ii);
         errors[ii] = fitFunc->GetParError(ii);
         std::cout << "Parameter " << ii << ": " << params[ii] << " ± " << errors[ii] << std::endl;
     }
+
+    // Print the chi-square value
+    const double chi2 = fitFunc->GetChisquare();
+    std::cout << "Chi-square: " << chi2  << std::endl;
 }
+
+void OffsetExtraction(TH1D *const hist) {
+    if (!hist) {
+        std::cerr << "Error: Histogram not properly initialized!" << std::endl;
+        return;
+    }
+
+    // Get histogram properties
+    const int binmax = hist->GetMaximumBin();
+    const int binmin = hist->GetMinimumBin();
+    const double maxValue = hist->GetMaximum();
+    const double minValue = hist->GetMinimum();
+    const double maxError = hist->GetBinError(binmax);
+    const double minError = hist->GetBinError(binmin);
+    
+    // Calculate vertical offset
+    const double offset = (maxValue + minValue) / 2.0;
+    const double offsetErr = maxError + minError;
+
+    // Number of bins in the histogram
+    const Int_t nBins = hist->GetNbinsX();
+    const Int_t n_size = nBins;
+
+    // Create an array to hold the size for TVirtualFFT
+    Int_t fftSize = n_size;
+    Int_t* sizeArray = &fftSize;
+
+    // Create a TVirtualFFT object for real-to-complex FFT
+    TVirtualFFT *fft = TVirtualFFT::FFT(1, sizeArray, "R2C ES K");
+    if (!fft) {
+        std::cerr << "Error: FFT object creation failed!" << std::endl;
+        return;
+    }
+
+    // Create an array to hold the histogram data
+    Double_t *in = new Double_t[n_size];
+    for (int ii = 0; ii < n_size; ii++) {
+        in[ii] = hist->GetBinContent(ii + 1);
+    }
+
+    // Perform transform
+    fft->SetPoints(in);
+    fft->Transform();
+
+    // Allocate arrays for real and imaginary parts
+    Double_t *real = new Double_t[n_size];
+    Double_t *imaginary = new Double_t[n_size];
+    fft->GetPointsComplex(real, imaginary);
+
+    // Compute the magnitude
+    std::vector<double> magnitudes(n_size / 2);
+    for (int ii = 0; ii < n_size / 2; ii++) {
+        magnitudes[ii] = TMath::Sqrt(real[ii] * real[ii] + imaginary[ii] * imaginary[ii]);
+    }
+
+    // Find the bin with the highest magnitude using a loop
+    int maxBin = 1;
+    double maxMagnitude = magnitudes[1];
+    for (int ii = 2; ii < n_size / 2; ii++) {
+        if (magnitudes[ii] > maxMagnitude) {
+            maxMagnitude = magnitudes[ii];
+            maxBin = ii;
+        }
+    }
+
+    // Calculate the dominant frequency
+    const double freqStep = hist->GetXaxis()->GetBinWidth(1);  // Bin width in x-axis units
+    const double dominantFreq = (maxBin * 1.0) / (n_size * freqStep); // Make sure division is correct
+
+    // Output the results
+    std::cout << "maxBin: " << maxBin << std::endl;
+    std::cout << "Offset: " << offset << " ± " << offsetErr << std::endl;
+    std::cout << "Dominant Frequency: " << dominantFreq << std::endl;
+
+    // Plot the transformed spectrum (frequency vs magnitude)
+    TCanvas *c1 = new TCanvas("c1", "FFT Spectrum", 800, 600);
+    std::vector<double> frequencies(n_size / 2);
+
+    // Fill frequency values for the plot (frequency = bin index * frequency step)
+    for (int ii = 0; ii < n_size / 2; ii++) {
+        frequencies[ii] = ii / (n_size * freqStep);  // Frequency in Hz or other units
+    }
+
+    // Create a graph to plot magnitude vs frequency
+    TGraph *graph = new TGraph(n_size / 2, frequencies.data(), magnitudes.data());
+    graph->SetTitle("FFT Spectrum;Frequency (Hz);Magnitude");
+    graph->SetLineColor(kBlue);
+    graph->SetLineWidth(2);
+    graph->Draw("AL");
+
+    c1->Update();
+    
+    // Save the canvas as a PNG image
+    // c1->SaveAs("/outplot/fft_spectrum.png");
+    c1->SaveAs("fft_spectrum.png");
+    std::cout << "Saved FFT spectrum to /outplot/fft_spectrum.png" << std::endl;
+
+    // Clean up
+    delete[] in;
+    delete[] real;
+    delete[] imaginary;
+    delete fft;
+}
+
+
+
 
 int main() {
     // Redirect ROOT output to the log file
@@ -207,7 +319,7 @@ int main() {
     }
 
     // Create histogram
-    gHist = new TH1D("hist", "Generated Sine Data", 200, 0, 20);
+    gHist = new TH1D("hist", "Generated Sine Data", 200, 0, 40);
 
     // Generate Sine data
     GenerateSineValue(gHist, 1.0, 1.0, 1.0, 3.0);
@@ -251,12 +363,15 @@ int main() {
     gStyle->SetTitleW(0.8);
 
     // Perform the fit
-    TF1 *fitFunc = new TF1("fitFunc", "[0] * sin([1] * x + [2]) + [3]", 0, 20);
+    TF1 *fitFunc = new TF1("fitFunc", "[0] * sin([1] * x + [2]) + [3]", 0, 40);
     
     IterativeFit(fitFunc, params, errors, 10, 1e-6);
 
     // Perform fit with ROOT's internal function and print results
     FitWithROOT(fitFunc, params, errors);
+
+    // Extract parameters from the histogram
+    OffsetExtraction(gHist);
     
     // Write the list of plots to the ROOT file
     plotList->Write();
