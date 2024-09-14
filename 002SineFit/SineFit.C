@@ -190,7 +190,7 @@ void FitWithROOT(TF1* const fitFunc, double* const params, double* const errors)
     // Perform the fit using ROOT's internal fitting function
     gHist->Fit(fitFunc, "Q");
 
-    std::cout << "The internal fitting function results:" << std::endl;
+    std::cout << "------The internal fitting function results:" << std::endl;
 
     // Retrieve and print the fit results
     for (int ii = 0; ii < 4; ii++) {
@@ -204,7 +204,8 @@ void FitWithROOT(TF1* const fitFunc, double* const params, double* const errors)
     std::cout << "Chi-square: " << chi2  << std::endl;
 }
 
-void OffsetExtraction(TH1D *const hist) {
+//Extract data from the histogram directly with FFT
+void Extraction(TH1D *const hist) {
     if (!hist) {
         std::cerr << "Error: Histogram not properly initialized!" << std::endl;
         return;
@@ -220,7 +221,11 @@ void OffsetExtraction(TH1D *const hist) {
     
     // Calculate vertical offset
     const double offset = (maxValue + minValue) / 2.0;
-    const double offsetErr = maxError + minError;
+    const double offsetErr = std::sqrt(maxError * maxError + minError * minError);
+
+    // Calculate amplitude
+    const double amp = (maxValue - minValue) / 2.0;
+    const double ampErr = std::sqrt(maxError * maxError + minError * minError);
 
     // Number of bins in the histogram
     const Int_t nBins = hist->GetNbinsX();
@@ -253,7 +258,7 @@ void OffsetExtraction(TH1D *const hist) {
     fft->GetPointsComplex(real, imaginary);
 
     // Compute the magnitude
-    std::vector<double> magnitudes(n_size / 2);
+    double magnitudes[n_size / 2];
     for (int ii = 0; ii < n_size / 2; ii++) {
         magnitudes[ii] = TMath::Sqrt(real[ii] * real[ii] + imaginary[ii] * imaginary[ii]);
     }
@@ -269,36 +274,43 @@ void OffsetExtraction(TH1D *const hist) {
     }
 
     // Calculate the dominant frequency
-    const double freqStep = hist->GetXaxis()->GetBinWidth(1);  // Bin width in x-axis units
-    const double dominantFreq = (maxBin * 1.0) / (n_size * freqStep); // Make sure division is correct
+    const double binWidth = hist->GetXaxis()->GetBinWidth(1);  
+    const double dominantFreq = (maxBin * 1.0) / (n_size * binWidth); 
 
-    // Output the results
-    std::cout << "maxBin: " << maxBin << std::endl;
-    std::cout << "Offset: " << offset << " ± " << offsetErr << std::endl;
-    std::cout << "Dominant Frequency: " << dominantFreq << std::endl;
-
-    // Plot the transformed spectrum (frequency vs magnitude)
-    TCanvas *c1 = new TCanvas("c1", "FFT Spectrum", 800, 600);
-    std::vector<double> frequencies(n_size / 2);
-
-    // Fill frequency values for the plot (frequency = bin index * frequency step)
-    for (int ii = 0; ii < n_size / 2; ii++) {
-        frequencies[ii] = ii / (n_size * freqStep);  // Frequency in Hz or other units
+    // Extract the phase for the dominant frequency
+    const double phase = TMath::ATan2(imaginary[maxBin], real[maxBin]);
+    
+    // Frequency error (resolution-based)
+    const double freqResolution = 1.0 / (nBins * binWidth);  // Frequency resolution used as error estimation
+    
+    // Phase error (SNR)
+    double noiseFloor = 0.0;
+    int noiseBins = 0;
+    for (int ii = nBins / 4; ii < nBins / 2; ii++) {  // Estimate noise floor from a region with no dominant peaks
+        noiseFloor += magnitudes[ii];
+        noiseBins++;
+    }
+    if (noiseBins > 0) {
+        noiseFloor /= noiseBins;  // Average noise floor
+    }
+    else {
+        noiseFloor = 0.0;  // Avoid division by zero
     }
 
-    // Create a graph to plot magnitude vs frequency
-    TGraph *graph = new TGraph(n_size / 2, frequencies.data(), magnitudes.data());
-    graph->SetTitle("FFT Spectrum;Frequency (Hz);Magnitude");
-    graph->SetLineColor(kBlue);
-    graph->SetLineWidth(2);
-    graph->Draw("AL");
+    const double SNR = maxMagnitude / noiseFloor;  // Signal-to-noise ratio
+    double phaseError;
+    if (SNR > 0) {
+        phaseError = 1.0 / SNR;
+    } else {
+        phaseError = 0.0;
+    }
 
-    c1->Update();
-    
-    // Save the canvas as a PNG image
-    // c1->SaveAs("/outplot/fft_spectrum.png");
-    c1->SaveAs("fft_spectrum.png");
-    std::cout << "Saved FFT spectrum to /outplot/fft_spectrum.png" << std::endl;
+    // Output the results
+    std::cout << "------The FFT extraction results:" << std::endl;
+    std::cout << "Amplitude: " << amp << " ± " << ampErr << std::endl;
+    std::cout << "Dominant Frequency: " << dominantFreq << " ± " << freqResolution << std::endl;
+    std::cout << "Phase at Dominant Frequency: " << phase << " ± " << phaseError << std::endl;
+    std::cout << "Offset: " << offset << " ± " << offsetErr << std::endl;
 
     // Clean up
     delete[] in;
@@ -371,7 +383,7 @@ int main() {
     FitWithROOT(fitFunc, params, errors);
 
     // Extract parameters from the histogram
-    OffsetExtraction(gHist);
+    Extraction(gHist);
     
     // Write the list of plots to the ROOT file
     plotList->Write();

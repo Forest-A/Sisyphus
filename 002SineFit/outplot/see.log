@@ -85,13 +85,14 @@ style::IniColorCB arleady set
         4  0.19478   0.187 -0.042  0.053  1.000
 ////////////////////////////Iteration 2: Chi2 = 238.603////////////////////////////
 Converged after 2 iterations.
-The internal fitting function results:
+------The internal fitting function results:
 Parameter 0: 163.292 ± 2.1778
 Parameter 1: 0.998412 ± 0.00116572
 Parameter 2: 1.03335 ± 0.0272754
 Parameter 3: 492.649 ± 1.56404
 Chi-square: 238.603
-maxBin: 6
-Offset: 600 ± 43.0851
-Dominant Frequency: 0.15
-Saved FFT spectrum to /outplot/fft_spectrum.png
+------The FFT extraction results:
+Amplitude: 400 ± 31.225
+Dominant Frequency: 0.15 ± 0.025
+Phase at Dominant Frequency: 0.654585 ± 0.0238184
+Offset: 600 ± 31.225
