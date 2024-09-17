@@ -12,7 +12,7 @@ TRandom3 gRand(123);
 TH1D *gHist = nullptr;
 TCanvas *gCanvas = nullptr;
 
-// Function to generate sine values and fill histogram with exactly nEvents entries
+// Function to generate sine values and Gaussian noise, then combine them into a single histogram
 void SmearSignal(TH1D *const hist, const double *params) {
     if (!hist) {
         std::cerr << "Error: Histogram not properly initialized!" << std::endl;
@@ -25,43 +25,67 @@ void SmearSignal(TH1D *const hist, const double *params) {
     const double phase = params[2];
     const double offset = params[3];
     const double noiseSigma = params[4];
-
+    
     const double nEvents = 1e5;
     const double xMin = 0;
     const double xMax = 40;  // Adjust the x-range as necessary
-    const double maxY = amp + offset; // Maximum possible y-value used for rejection sampling
+    const double smaxY = amp + offset; // Maximum possible y-value used for rejection sampling
+
+    const double mean = 20.0;
+    const double gmaxY = TMath::Gaus(mean, mean, noiseSigma, noiseSigma);
     
-    int fillEvents = 0;  // Counter for filled events
+    int sfillEvents = 0;  // Counter for filled events
+    int gfillEvents = 0;  // Counter for filled events
 
-    // Acceptance-Rejection sampling to generate exactly nEvents
-    while (fillEvents < nEvents) {
-        // Generate a random x-value in the range [xMin, xMax]
+    // Create temporary histograms
+    TH1D *histSine = new TH1D("histSine", "Sine Signal", hist->GetNbinsX(), hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
+    TH1D *histNoise = new TH1D("histNoise", "Gaussian Noise", hist->GetNbinsX(), hist->GetXaxis()->GetXmin(), hist->GetXaxis()->GetXmax());
+
+    // Acceptance-Rejection sampling to generate sine values
+    while (sfillEvents < nEvents) {
         const double xVal = gRand.Uniform(xMin, xMax);
-
-        // Compute the sine value at this x-value
         const double yVal = amp * TMath::Sin(freq * xVal + phase) + offset;
-
-        // Generate a random number for comparison
-        const double rr = gRand.Uniform(0, maxY); 
-
-        // Acceptance criterion: accept the value if rr < yVal
+        const double rr = gRand.Uniform(0, smaxY);
         if (rr < yVal) {
-            hist->Fill(xVal);
-            fillEvents++;
+            histSine->Fill(xVal);
+            sfillEvents++;
         }
     }
 
-    // Add Gaussian noise to the histogram
-    const int nBins = hist->GetNbinsX();
-    for (int ii = 1; ii <= nBins; ii++) {
-        const double binContent = hist->GetBinContent(ii);
+   // Generate Gaussian noise and fill the noise histogram
+     while (gfillEvents < nEvents) {
+        // Generate a random x-value in the range [xMin, xMax]
+        const double xVal = gRand.Uniform(xMin, xMax);
+        const double yVal = TMath::Gaus(xVal, mean, noiseSigma);
+        const double rr = gRand.Uniform(0, gmaxY);
 
-        // Generate Gaussian noise
-        const double noise = gRand.Gaus(0, noiseSigma);
-
-        // Add Gaussian noise to the bin content
-        hist->SetBinContent(ii, binContent + noise);
+        // Acceptance criterion: accept the value if rr < yVal
+        if (rr < yVal) {
+            histNoise->Fill(xVal);
+            gfillEvents++;
+        }
     }
+
+    // Combine sine values and Gaussian noise into the final histogram
+    for (int ii = 1; ii <= hist->GetNbinsX(); ii++) {
+        const double sineContent = histSine->GetBinContent(ii);
+        const double noiseContent = histNoise->GetBinContent(ii);
+        hist->SetBinContent(ii, sineContent + noiseContent);
+    }
+
+    // Plot the noise histogram for debugging
+    TCanvas *c1 = new TCanvas("c1", "Noise Histogram", 800, 600);
+    histNoise->SetLineColor(kRed); // Set color for visibility
+    histNoise->SetLineWidth(2);    // Set line width for visibility
+    histNoise->Draw();             // Draw histogram
+
+    // Save the plot
+    c1->SaveAs("outplot/histNoise.png");
+
+    // Clean up
+    delete c1;
+    delete histSine;
+    delete histNoise;
 }
 
 // Function to plot and save the histogram
@@ -128,7 +152,7 @@ int main() {
     gHist = new TH1D("gHist", "Sine Histogram", 200, 0, 40);
 
     // Parameters for sine function and Gaussian noise
-    const double params[5] = {3, 1, 0, 15, 1};  // A, B, C, D, sigma
+    const double params[5] = {1, 1, 0, 15, 1};  // A, B, C, D, sigma
 
     // Perform smearing of the sine signal with Gaussian noise
     SmearSignal(gHist, params);
