@@ -77,7 +77,7 @@ void Plot() {
     // Draw histogram
     style::ResetStyle(gHist);
     gHist->SetLineColor(kBlue);
-    gHist->SetLineWidth(6);
+    gHist->SetLineWidth(3);
     gHist->SetFillStyle(0);
     gHist->Draw();
 
