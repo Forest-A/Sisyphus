@@ -60,7 +60,7 @@ void SmearSignal(TH1D *const hist, const double *params) {
 
 // Sine function
 double Sine(double xx, const double *params) {
-    return params[0] * sin(params[1] * xx + params[2]) + params[3];
+  return params[0] * sin(params[1] * xx + params[2]) + params[3];
 }
 
 // Gaussian function
@@ -257,6 +257,49 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
     }
 }
 
+// Extract sine initial guesses  using ROOT's internal fitting and calculate sigma from residuals
+void InitialGuess(double* params) {
+    TF1 *sineFit = new TF1("sineFit", "[0] * sin([1] * x + [2]) + [3]", 0, 50);
+    sineFit->SetParameters(5, 1, 0, 10);  // Initial guesses for amp, freq, phase, offset
+    
+    // Perform the fit on the histogram
+    gHist->Fit(sineFit, "Q");  // 'Q' option makes the fit quiet (no printing)
+    
+    // Extract fitted parameters 
+    params[0] = sineFit->GetParameter(0);  // Amplitude
+    params[1] = sineFit->GetParameter(1);  // Frequency
+    params[2] = sineFit->GetParameter(2);  // Phase
+    params[3] = sineFit->GetParameter(3);  // Offset
+
+    int nBins = gHist->GetNbinsX();
+    
+    // Create a histogram for residuals
+    TH1D *residualHist = new TH1D("residualHist", "Residuals", 500, -50, 50);
+    
+    // Loop over each bin to calculate residuals
+    for (int ii = 1; ii <= nBins; ii++) {
+        double xx = gHist->GetBinCenter(ii);
+        double data = gHist->GetBinContent(ii);
+        double fitValue = sineFit->Eval(xx); 
+        
+        double residual = data - fitValue;  // Calculate residual
+	residualHist->Fill(residual);  // Fill the residual histogram
+    }
+
+    // Fit the residuals to obtain a new estimate for sigma
+    TF1 *residualFit = new TF1("residualFit", "gaus", -50, 50);  // Gaussian fit for residuals
+    residualHist->Fit(residualFit, "Q");  // Fit residuals histogram
+
+    // Extract sigma from the fitted residuals
+    params[4] = residualFit->GetParameter(2);  // Set sigma from the residual fit
+
+    std::cout << "Initial sigma !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " << params[4] << std::endl;
+
+    delete sineFit;
+    delete residualFit;
+    delete residualHist;
+}
+
 int main() {
     // Redirect ROOT output to the log file
     const Int_t status = gSystem->RedirectOutput("outplot/see.log", "w");  // "w" to overwrite the file
@@ -289,10 +332,12 @@ int main() {
     // Perform smearing of the sine signal with Gaussian noise
     SmearSignal(gHist, params);
 
-    double guess[5] = {5.0, 1.0, 0.0, 10.0, 1.0}; 
+    double guess[5]; 
     double errors[5];
 
-    IterativeFit(guess, errors, 10, 1e-8); // Iteration number, Convergence threshold
+    InitialGuess(guess);
+
+    IterativeFit(guess, errors, 10, 1e-6); // Iteration number, Convergence threshold
 
     // Restore output to the default streams
     gSystem->RedirectOutput(0);
@@ -302,159 +347,5 @@ int main() {
 
     return 0;
 }
-
-
-// #include <TFile.h>
-// #include <TH1D.h>
-// #include <TF1.h>
-// #include <TCanvas.h>
-// #include <TMath.h>
-// #include <TRandom3.h>
-// #include <TLegend.h>
-// #include <Math/Integrator.h>
-// #include <iostream>
-// #include <cmath>
-
-// // Sine function
-// double Sine(double xx, const double *params) {
-//     return params[0] * sin(params[1] * xx + params[2]) + params[3];
-// }
-
-// // Normalized Gaussian function
-// double Gaussian(double xx, double sigma) {
-//     return (1.0 / (sigma * sqrt(2 * TMath::Pi()))) * exp(-0.5 * xx * xx / (sigma * sigma));
-// }
-
-// // Continuous convolution of sine and Gaussian
-// double convolvedFunction(const double xx, const double *params) {
-//       ROOT::Math::IntegratorOneDimOptions::SetDefaultIntegrator("Gauss");
-//      ROOT::Math::IntegratorOneDim integrator;
-//     integrator.SetRelTolerance(1e-6);  // Increase accuracy
-    
-    
-//     // Define the integrand for convolution
-//     auto integrand = [&](double x_prime) -> double {
-//         double sine_val = Sine(xx - x_prime, params);          
-//         double gauss_val = Gaussian( x_prime, params[4]); 
-//         return sine_val * gauss_val;
-//     };
-
-//     // Set the lambda function to the integrator
-//     integrator.SetFunction(integrand);
-
-//     // Adjust integration limits based on sigma
-//     const double x_min = xx + 10 * params[4];
-//     const double x_max = xx - 10 * params[4];
-    
-//     // Perform continuous integration
-//     double result = integrator.Integral(x_min, x_max);
-//     return result;
-// }
-
-// // Define a ROOT-compatible function using TF1 for the convolution
-// TF1* CreateConvolutionFunction(const double* params) {
-//     // Lambda function to wrap the convolution function for TF1
-//     auto convolved = [&](double* x, double* par) {
-//         return convolvedFunction(x[0], par);
-//     };
-
-//     // Define convolution function in ROOT's TF1 class
-//     TF1 *fitFunc = new TF1("fitFunc", convolved, 0, 20, 5); // xmin = 0, xmax = 20
-//     fitFunc->SetParameters(params);
-//     return fitFunc;
-// }
-
-// int main() {
-//     // Parameters for the sine function and Gaussian noise
-//   double params[5] = {5, 1, 0, 0, 2};  // Amplitude, Frequency, Phase, Offset, Sigma
-
-//     // Create canvas for plotting
-//     TCanvas *canvas = new TCanvas("canvas", "Convolved Sine and Gaussian", 800, 600);
-    
-//     // Create the convolution function and plot it
-//     TF1* convolutionFunc = CreateConvolutionFunction(params);
-    
-//     convolutionFunc->SetLineColor(kRed);
-//     convolutionFunc->SetTitle("Convolved Sine and Gaussian; x-axis; y-axis");
-//     convolutionFunc->SetNpx(1e3);  // Increase number of points for smooth plot
-//     convolutionFunc->Draw();
-
-//     // Save the plot as a PNG file
-//     canvas->SaveAs("outplot/convolution_plot.png");
-
-//     // Display canvas
-//     canvas->Update();
-    
-//     // Clean up
-//     delete canvas;
-//     delete convolutionFunc;
-
-//     return 0;
-// }
-
-
-// #include <TFile.h>
-// #include <TH1D.h>
-// #include <TF1.h>
-// #include <TCanvas.h>
-// #include <TMath.h>
-// #include <TRandom3.h>
-// #include <TLegend.h>
-// #include <TStyle.h>
-// #include <TF1Convolution.h>
-
-// int main() {
-//     // Style and canvas setup
-//     gStyle->SetOptStat(0);
-//     TCanvas *canvas = new TCanvas("canvas", "Sine + Gaussian Convolution", 800, 600);
-
-//     // Define the sine function
-//     TF1 *sine = new TF1("sine", "[0] * TMath::Sin([1] * x + [2]) + [3]", 0, 100);
-//     sine->SetParameters(5, 1, 0, 20);  // Amplitude, Frequency, Phase, Offset
-//     sine->SetLineColor(kBlue);
-//     sine->SetTitle("Sine and Gaussian Convolution; x-axis; y-axis");
-
-//     // Define the Gaussian function (centered at 0)
-//     TF1 *gaussian = new TF1("gaussian", "TMath::Gaus(x, 0, [0])", -10, 10);
-//     gaussian->SetParameter(0, 4);  // Mean, Sigma
-//     gaussian->SetLineColor(kGreen);
-
-//     // Create a TF1Convolution object that convolves sine and Gaussian
-//     TF1Convolution *conv = new TF1Convolution(sine, gaussian, 0, 100, true);
-//     conv->SetNofPointsFFT(1000); // Set the number of points for FFT convolution
-
-//     // Create a new TF1 to represent the convolution
-//     TF1 *convolution = new TF1("convolution", *conv, 0, 100, conv->GetNpar());
-//     convolution->SetNpx(10000);  // Increase the number of points for better resolution
-//     convolution->SetLineColor(kRed);
-
-//     // Set the same parameters for the convolution as in the original functions
-//     convolution->SetParameters(sine->GetParameters());
-//     convolution->SetParameter(4, gaussian->GetParameter(0));  // Sigma
-
-//     // Draw the original sine, Gaussian, and convolution
-//     // sine->Draw();
-//     // gaussian->Draw("same");
-//     convolution->Draw();
-
-//     // Create a legend
-//     TLegend *legend = new TLegend(0.6, 0.7, 0.9, 0.9);
-//     legend->AddEntry(sine, "Sine", "l");
-//     legend->AddEntry(gaussian, "Gaussian", "l");
-//     legend->AddEntry(convolution, "Convolution", "l");
-//     legend->Draw();
-
-//     // Save the canvas
-//     canvas->SaveAs("sine_gaussian_convolution.png");
-
-//     // Clean up
-//     delete sine;
-//     delete gaussian;
-//     delete convolution;
-//     delete conv;
-//     delete canvas;
-
-//     return 0;
-// }
 
 
