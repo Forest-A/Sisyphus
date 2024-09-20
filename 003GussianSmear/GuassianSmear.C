@@ -10,6 +10,7 @@
 #include <TSystem.h>
 #include <TList.h>
 #include <Math/Integrator.h>
+#include <TStopwatch.h>
 
 #include "style.h"
 
@@ -94,7 +95,7 @@ double convolvedFunction(const double xx, const double *params) {
 }
 
 // Define a ROOT-compatible function using TF1 for the convolution
-TF1* CreateConvolutionFunction(const double* params) {
+TF1* CreateConvolution(const double* params) {
     auto convolved = [&](double* x, double* par) {
         return convolvedFunction(x[0], par);
     };
@@ -171,15 +172,20 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
 
     gCanvas->Clear();  // Clear the canvas for new plot
 
+    // Set title and axis labels
     gHist->SetTitle("Sine Fitting");
+    gStyle->SetOptTitle(1);
+    gHist->GetXaxis()->SetTitle("x-axis");
+    gHist->GetYaxis()->SetTitle("y-axis");
+    gHist->GetYaxis()->SetRangeUser(0, 60);
 
     // Draw histogram and fit function
     style::ResetStyle(gHist);
     gHist->SetLineColor(kBlue);
     gHist->SetLineWidth(1);
     gHist->SetFillStyle(0);
-    gHist->Draw();
-    
+    gHist->Draw();  // Draw after setting the title and axis labels
+
     fitFunc->SetLineColor(kRed);
     fitFunc->SetLineWidth(2);
     fitFunc->SetNpx(1e5);
@@ -197,19 +203,13 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     lg->AddEntry(fitFunc, "Fitted Sine", "l");
 
     lg->Draw();
-    
-    // Axis labels
-    gHist->GetXaxis()->SetTitle("x-axis");
-    gHist->GetYaxis()->SetTitle("y-axis");
 
-    // Optimise scales
-    gHist->GetYaxis()->SetRangeUser(0, 50);
-    
     // Print out the plots
     gCanvas->Print(Form("outplot/SineFit_%d.png", iteration));
 
-    delete lg; 
+    delete lg;
 }
+
 
 // Perform iterative fitting with convergence check
 void IterativeFit(double* const params, double* const errors, const int maxIterations, const double convergenceThreshold) {
@@ -217,8 +217,12 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
     double currentChi2 = 0.0;
 
     for (int ii = 0; ii < maxIterations; ii++) {
+
+        TStopwatch timer;  // Start timing each iteration
+	timer.Start();
+      
         // Create the convolution function for each iteration
-        TF1 *fitFunc = CreateConvolutionFunction(params);
+        TF1 *fitFunc = CreateConvolution(params);
 
         // Perform a single fit
         const int status = SingleFit(fitFunc, params, errors, currentChi2);
@@ -228,6 +232,12 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
 
         // Plot and store the results for this iteration
         PlotSineFit(ii + 1, fitFunc, params, errors);
+
+	// Stop the timer and print the time consumed per loop
+	timer.Stop();
+	std::cout << "Iteration " << ii + 1 << " took: " << timer.RealTime() << "seconds (real time), " 
+                  << timer.CpuTime() << " seconds (CPU time)." << std::endl;
+	std::cout << "//////////////////////////////////////////////////////////////////////////////////" << std::endl;
 
         // Check for convergence
         if (status != 0) {
@@ -282,10 +292,7 @@ int main() {
     double guess[5] = {5.0, 1.0, 0.0, 10.0, 1.0}; 
     double errors[5];
 
-    IterativeFit(guess, errors, 10, 1e-6);
-
-    // Update canvas and keep it visible
-    gCanvas->Update();
+    IterativeFit(guess, errors, 10, 1e-8); // Iteration number, Convergence threshold
 
     // Restore output to the default streams
     gSystem->RedirectOutput(0);
@@ -384,4 +391,70 @@ int main() {
 
 //     return 0;
 // }
+
+
+// #include <TFile.h>
+// #include <TH1D.h>
+// #include <TF1.h>
+// #include <TCanvas.h>
+// #include <TMath.h>
+// #include <TRandom3.h>
+// #include <TLegend.h>
+// #include <TStyle.h>
+// #include <TF1Convolution.h>
+
+// int main() {
+//     // Style and canvas setup
+//     gStyle->SetOptStat(0);
+//     TCanvas *canvas = new TCanvas("canvas", "Sine + Gaussian Convolution", 800, 600);
+
+//     // Define the sine function
+//     TF1 *sine = new TF1("sine", "[0] * TMath::Sin([1] * x + [2]) + [3]", 0, 100);
+//     sine->SetParameters(5, 1, 0, 20);  // Amplitude, Frequency, Phase, Offset
+//     sine->SetLineColor(kBlue);
+//     sine->SetTitle("Sine and Gaussian Convolution; x-axis; y-axis");
+
+//     // Define the Gaussian function (centered at 0)
+//     TF1 *gaussian = new TF1("gaussian", "TMath::Gaus(x, 0, [0])", -10, 10);
+//     gaussian->SetParameter(0, 4);  // Mean, Sigma
+//     gaussian->SetLineColor(kGreen);
+
+//     // Create a TF1Convolution object that convolves sine and Gaussian
+//     TF1Convolution *conv = new TF1Convolution(sine, gaussian, 0, 100, true);
+//     conv->SetNofPointsFFT(1000); // Set the number of points for FFT convolution
+
+//     // Create a new TF1 to represent the convolution
+//     TF1 *convolution = new TF1("convolution", *conv, 0, 100, conv->GetNpar());
+//     convolution->SetNpx(10000);  // Increase the number of points for better resolution
+//     convolution->SetLineColor(kRed);
+
+//     // Set the same parameters for the convolution as in the original functions
+//     convolution->SetParameters(sine->GetParameters());
+//     convolution->SetParameter(4, gaussian->GetParameter(0));  // Sigma
+
+//     // Draw the original sine, Gaussian, and convolution
+//     // sine->Draw();
+//     // gaussian->Draw("same");
+//     convolution->Draw();
+
+//     // Create a legend
+//     TLegend *legend = new TLegend(0.6, 0.7, 0.9, 0.9);
+//     legend->AddEntry(sine, "Sine", "l");
+//     legend->AddEntry(gaussian, "Gaussian", "l");
+//     legend->AddEntry(convolution, "Convolution", "l");
+//     legend->Draw();
+
+//     // Save the canvas
+//     canvas->SaveAs("sine_gaussian_convolution.png");
+
+//     // Clean up
+//     delete sine;
+//     delete gaussian;
+//     delete convolution;
+//     delete conv;
+//     delete canvas;
+
+//     return 0;
+// }
+
 
