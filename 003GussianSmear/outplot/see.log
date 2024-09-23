@@ -1,104 +1,170 @@
 style::IniColorCB creating new color
 style::IniColorCB arleady set
-Initial sigma !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: 4.61682
+Initial Fit Results:
+Amplitude: 632.892 ± 2.75161
+Frequency: 0.995976 ± 0.000283814
+Phase: -0.00451979 ± 0.00892286
+Offset: 1950.73 ± 1.99177
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
-     1 Amplitude    6.96873e+00  1.00000e+00    1.00000e-01  1.00000e+07
-     2 Frequency    9.92984e-01  1.00000e-02    0.00000e+00  1.00000e+04
-     3 Phase        4.55510e-02  1.00000e-01    0.00000e+00  1.00000e+03
- MINUIT WARNING IN PARAMETR
- ============== VARIABLE3 BROUGHT BACK INSIDE LIMITS.
-     4 Offset       1.84650e+01  1.00000e-01    0.00000e+00  1.00000e+03
-     5 Sigma        4.61682e+00  1.00000e-01    0.00000e+00  1.00000e+03
+     1 Amplitude    6.32892e+02  6.32892e+01    0.00000e+00  6.32892e+03
+     2 Frequency    9.95976e-01  9.95976e-02    1.00000e-01  9.95976e+00
+     3 Phase       -4.51979e-03  1.00000e-01   -3.14159e+00  3.14159e+00
+     4 Offset       1.95073e+03  1.95073e+02    0.00000e+00  1.95073e+04
+     5 Sigma        1.00000e+00  1.00000e-01    1.00000e-01  1.00000e+01
  **********
  **    1 **MIGRAD
  **********
  FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
  START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
- FCN=1.03386e+06 FROM MIGRAD    STATUS=INITIATE       93 CALLS          94 TOTAL
+ FCN=2.27602e+06 FROM MIGRAD    STATUS=INITIATE       22 CALLS          23 TOTAL
                      EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
   EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Amplitude    2.52539e+05   1.00000e+00   1.78008e-01   3.42482e+03
-   2  Frequency    9.92984e-01   1.00000e-02   0.00000e+00  -4.70424e+07
-   3  Phase        4.55510e-02   1.00000e-01   0.00000e+00  -6.73092e+04
-   4  Offset       1.84650e+01   1.00000e-01   0.00000e+00   1.64873e+07
-   5  Sigma        4.61682e+00   1.00000e-01   0.00000e+00   3.30424e+07
+   1  Amplitude    6.32892e+02   6.32892e+01   3.33726e-02  -4.93265e+05
+   2  Frequency    9.95976e-01   9.95976e-02   3.51958e-02  -1.01815e+06
+   3  Phase       -4.51979e-03   1.00000e-01   3.18364e-02  -3.96232e+04
+   4  Offset       1.95073e+03   1.95073e+02   3.33726e-02   2.29171e+07
+   5  Sigma        1.00000e+00   1.00000e-01   3.51878e-02   2.17375e+07
  MIGRAD MINIMIZATION HAS CONVERGED.
  MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
- COVARIANCE MATRIX CALCULATED SUCCESSFULLY
- FCN=619.441 FROM MIGRAD    STATUS=CONVERGED     483 CALLS         484 TOTAL
-                     EDM=1.77954e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
-  EXT PARAMETER                                   STEP         FIRST   
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -1.1779e-04  1.2734e-01  9.5867e-01  1.8714e+00  2.0427e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.002161 TO DIAGONAL.
+ FCN=8664.2 FROM MIGRAD    STATUS=CONVERGED     169 CALLS         170 TOTAL
+                     EDM=4.56953e-06    STRATEGY= 1      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Amplitude    3.79355e+04   1.12966e+05   2.73512e-05   1.92755e-01
-   2  Frequency    9.92983e-01   2.44278e-03   7.39511e-07   2.19953e+01
-   3  Phase        6.32874e+00   7.89304e-02   5.93343e-06   4.02091e-01
-   4  Offset       1.55407e+00   2.20010e-01   4.80484e-06  -2.59028e+00
-   5  Sigma        4.74008e+00   6.69442e-01   1.36487e-06  -5.11558e+00
+   1  Amplitude    4.84767e+02   4.94256e+00   5.53468e-05  -2.39885e-01
+   2  Frequency    9.95976e-01   2.81483e-04   2.22285e-06  -4.21484e+01
+   3  Phase       -4.52312e-03   8.86121e-03   6.31854e-05  -6.24498e-01
+   4  Offset       1.22184e+03   1.89590e+01   1.15744e-05  -3.59416e+00
+   5  Sigma        6.36928e-01   9.88397e-03   1.30136e-05  -3.41428e+00
  EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  5    ERR DEF=1
-  1.291e+10  3.767e+01  1.070e+03 -2.491e+04  7.604e+04 
-  3.767e+01  5.967e-06  1.681e-04 -6.210e-05  1.914e-04 
-  1.070e+03  1.681e-04  6.230e-03 -1.777e-03  5.445e-03 
- -2.491e+04 -6.210e-05 -1.777e-03  4.840e-02 -1.469e-01 
-  7.604e+04  1.914e-04  5.445e-03 -1.469e-01  4.482e-01 
+  2.443e+01  4.643e-05 -1.227e-03  8.517e+01 -4.418e-02 
+  4.643e-05  7.923e-08 -2.171e-06  1.558e-06  2.596e-09 
+ -1.227e-03 -2.171e-06  7.852e-05 -1.185e-05 -5.195e-08 
+  8.517e+01  1.558e-06 -1.185e-05  3.594e+02 -1.870e-01 
+ -4.418e-02  2.596e-09 -5.195e-08 -1.870e-01  9.769e-05 
+ERR MATRIX NOT POS-DEF
  PARAMETER  CORRELATION COEFFICIENTS  
        NO.  GLOBAL      1      2      3      4      5
-        1  0.99993   1.000  0.136  0.119 -0.997  1.000
-        2  0.92017   0.136  1.000  0.872 -0.116  0.117
-        3  0.87168   0.119  0.872  1.000 -0.102  0.103
-        4  0.99750  -0.997 -0.116 -0.102  1.000 -0.997
-        5  0.99993   1.000  0.117  0.103 -0.997  1.000
-////////////////////////////Iteration 1: Chi2 = 619.441////////////////////////////
-Iteration 1 took: 5.50303seconds (real time), 5.45 seconds (CPU time).
+        1  0.91029   1.000  0.033 -0.028  0.909 -0.904
+        2  0.87081   0.033  1.000 -0.871  0.000  0.001
+        3  0.87054  -0.028 -0.871  1.000 -0.000 -0.001
+        4  0.99799   0.909  0.000 -0.000  1.000 -0.998
+        5  0.99789  -0.904  0.001 -0.001 -0.998  1.000
+ ERR MATRIX NOT POS-DEF
+////////////////////////////Iteration 1: Chi2 = 8664.2////////////////////////////
+Iteration 1 took: 0.953531seconds (real time), 0.94 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
-     1 Amplitude    3.79355e+04  1.00000e+00    1.00000e-01  1.00000e+07
-     2 Frequency    9.92983e-01  1.00000e-02    0.00000e+00  1.00000e+04
-     3 Phase        6.32874e+00  1.00000e-01    0.00000e+00  1.00000e+03
-     4 Offset       1.55407e+00  1.00000e-01    0.00000e+00  1.00000e+03
-     5 Sigma        4.74008e+00  1.00000e-01    0.00000e+00  1.00000e+03
+     1 Amplitude    4.84767e+02  4.84767e+01    0.00000e+00  4.84767e+03
+     2 Frequency    9.95976e-01  9.95976e-02    1.00000e-01  9.95976e+00
+     3 Phase       -4.52312e-03  1.00000e-01   -3.14159e+00  3.14159e+00
+     4 Offset       1.22184e+03  1.22184e+02    0.00000e+00  1.22184e+04
+     5 Sigma        6.36928e-01  6.36928e-02    1.00000e-01  6.36928e+00
  **********
  **    1 **MIGRAD
  **********
  FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
  START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
- FCN=619.441 FROM MIGRAD    STATUS=INITIATE       20 CALLS          21 TOTAL
+ FCN=8664.2 FROM MIGRAD    STATUS=INITIATE       28 CALLS          29 TOTAL
                      EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
   EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Amplitude    3.79355e+04   1.00000e+00   1.62668e-06   1.92793e-01
-   2  Frequency    9.92983e-01   1.00000e-02   1.00359e-04   1.12228e+01
-   3  Phase        6.32874e+00   1.00000e-01   1.26105e-03  -4.02367e-01
-   4  Offset       1.55407e+00   1.00000e-01   2.53996e-03  -2.58860e+00
-   5  Sigma        4.74008e+00   1.00000e-01   1.45601e-03  -5.19313e+00
+   1  Amplitude    4.84767e+02   4.84767e+01   3.33726e-02  -2.04626e-01
+   2  Frequency    9.95976e-01   9.95976e-02   3.51958e-02  -4.16604e+01
+   3  Phase       -4.52312e-03   1.00000e-01   3.18364e-02  -6.24370e-01
+   4  Offset       1.22184e+03   1.22184e+02   3.33726e-02  -2.78451e+00
+   5  Sigma        6.36928e-01   6.36928e-02   3.63658e-02  -2.66845e+00
  MIGRAD MINIMIZATION HAS CONVERGED.
  MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
- COVARIANCE MATRIX CALCULATED SUCCESSFULLY
- FCN=619.441 FROM MIGRAD    STATUS=CONVERGED      65 CALLS          66 TOTAL
-                     EDM=1.2751e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
-  EXT PARAMETER                                   STEP         FIRST   
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -1.1705e-04  1.2734e-01  9.5867e-01  1.8714e+00  2.0427e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.002160 TO DIAGONAL.
+ FCN=8664.2 FROM MIGRAD    STATUS=CONVERGED      71 CALLS          72 TOTAL
+                     EDM=2.5102e-06    STRATEGY= 1      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Amplitude    3.79353e+04   1.06320e+05   2.73560e-05  -1.37417e-01
-   2  Frequency    9.92983e-01   2.44154e-03   7.39511e-07   7.15917e+01
-   3  Phase        6.32874e+00   7.89065e-02   5.93277e-06  -2.90858e-01
-   4  Offset       1.55408e+00   2.07005e-01   4.80461e-06  -4.86340e-01
-   5  Sigma        4.74008e+00   6.29632e-01   1.36487e-06   2.33067e+00
+   1  Amplitude    4.84767e+02   4.94255e+00   6.40170e-05  -2.50442e-01
+   2  Frequency    9.95976e-01   2.81484e-04   2.22186e-06  -7.91295e+00
+   3  Phase       -4.52197e-03   8.86123e-03   6.31571e-05   5.20382e-01
+   4  Offset       1.22184e+03   1.89589e+01   1.49237e-05   5.12642e-01
+   5  Sigma        6.36928e-01   9.88395e-03   1.66304e-05   3.34581e-01
  EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  5    ERR DEF=1
-  1.142e+10  3.389e+01 -9.631e+02 -2.204e+04  6.726e+04 
-  3.389e+01  5.961e-06 -1.679e-04 -5.477e-05  1.691e-04 
- -9.631e+02 -1.679e-04  6.226e-03  1.569e-03 -4.812e-03 
- -2.204e+04 -5.477e-05  1.569e-03  4.285e-02 -1.299e-01 
-  6.726e+04  1.691e-04 -4.812e-03 -1.299e-01  3.964e-01 
+  2.443e+01  4.642e-05 -1.227e-03  8.517e+01 -4.418e-02 
+  4.642e-05  7.923e-08 -2.171e-06  1.556e-06  2.597e-09 
+ -1.227e-03 -2.171e-06  7.852e-05 -1.179e-05 -5.198e-08 
+  8.517e+01  1.556e-06 -1.179e-05  3.594e+02 -1.870e-01 
+ -4.418e-02  2.597e-09 -5.198e-08 -1.870e-01  9.769e-05 
+ERR MATRIX NOT POS-DEF
  PARAMETER  CORRELATION COEFFICIENTS  
        NO.  GLOBAL      1      2      3      4      5
-        1  0.99992   1.000  0.130 -0.114 -0.996  1.000
-        2  0.92009   0.130  1.000 -0.872 -0.108  0.110
-        3  0.87159  -0.114 -0.872  1.000  0.096 -0.097
-        4  0.99717  -0.996 -0.108  0.096  1.000 -0.997
-        5  0.99993   1.000  0.110 -0.097 -0.997  1.000
-////////////////////////////Iteration 2: Chi2 = 619.441////////////////////////////
-Iteration 2 took: 2.03391seconds (real time), 2.03 seconds (CPU time).
+        1  0.91029   1.000  0.033 -0.028  0.909 -0.904
+        2  0.87081   0.033  1.000 -0.871  0.000  0.001
+        3  0.87054  -0.028 -0.871  1.000 -0.000 -0.001
+        4  0.99799   0.909  0.000 -0.000  1.000 -0.998
+        5  0.99789  -0.904  0.001 -0.001 -0.998  1.000
+ ERR MATRIX NOT POS-DEF
+////////////////////////////Iteration 2: Chi2 = 8664.2////////////////////////////
+Iteration 2 took: 0.627533seconds (real time), 0.62 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
-Converged after 2 iterations.
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Amplitude    4.84767e+02  4.84767e+01    0.00000e+00  4.84767e+03
+     2 Frequency    9.95976e-01  9.95976e-02    1.00000e-01  9.95976e+00
+     3 Phase       -4.52197e-03  1.00000e-01   -3.14159e+00  3.14159e+00
+     4 Offset       1.22184e+03  1.22184e+02    0.00000e+00  1.22184e+04
+     5 Sigma        6.36928e-01  6.36928e-02    1.00000e-01  6.36928e+00
+ **********
+ **    1 **MIGRAD
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ FCN=8664.2 FROM MIGRAD    STATUS=INITIATE       28 CALLS          29 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Amplitude    4.84767e+02   4.84767e+01   3.33726e-02  -2.47798e-01
+   2  Frequency    9.95976e-01   9.95976e-02   3.51958e-02  -7.42504e+00
+   3  Phase       -4.52197e-03   1.00000e-01   3.18364e-02   5.20510e-01
+   4  Offset       1.22184e+03   1.22184e+02   3.33726e-02   5.15378e-01
+   5  Sigma        6.36928e-01   6.36928e-02   3.63658e-02   3.37642e-01
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -1.1690e-04  1.2734e-01  9.5867e-01  1.8714e+00  2.0427e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.002160 TO DIAGONAL.
+ FCN=8664.2 FROM MIGRAD    STATUS=CONVERGED      71 CALLS          72 TOTAL
+                     EDM=1.72444e-06    STRATEGY= 1      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Amplitude    4.84768e+02   4.94257e+00   6.40170e-05   3.00511e-01
+   2  Frequency    9.95976e-01   2.81484e-04   2.22186e-06  -1.93325e+01
+   3  Phase       -4.52513e-03   8.86123e-03   6.31570e-05  -6.36430e-02
+   4  Offset       1.22184e+03   1.89589e+01   1.49237e-05  -1.73147e+00
+   5  Sigma        6.36928e-01   9.88395e-03   1.66304e-05  -1.42357e+00
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  5    ERR DEF=1
+  2.443e+01  4.642e-05 -1.227e-03  8.517e+01 -4.418e-02 
+  4.642e-05  7.923e-08 -2.171e-06  1.555e-06  2.597e-09 
+ -1.227e-03 -2.171e-06  7.852e-05 -1.177e-05 -5.199e-08 
+  8.517e+01  1.555e-06 -1.177e-05  3.594e+02 -1.870e-01 
+ -4.418e-02  2.597e-09 -5.199e-08 -1.870e-01  9.769e-05 
+ERR MATRIX NOT POS-DEF
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2      3      4      5
+        1  0.91029   1.000  0.033 -0.028  0.909 -0.904
+        2  0.87081   0.033  1.000 -0.871  0.000  0.001
+        3  0.87054  -0.028 -0.871  1.000 -0.000 -0.001
+        4  0.99799   0.909  0.000 -0.000  1.000 -0.998
+        5  0.99789  -0.904  0.001 -0.001 -0.998  1.000
+ ERR MATRIX NOT POS-DEF
+////////////////////////////Iteration 3: Chi2 = 8664.2////////////////////////////
+Iteration 3 took: 0.597446seconds (real time), 0.59 seconds (CPU time).
+//////////////////////////////////////////////////////////////////////////////////
+Converged after 3 iterations.

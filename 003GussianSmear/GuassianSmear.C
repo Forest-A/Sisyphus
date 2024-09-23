@@ -10,6 +10,7 @@
 #include <TSystem.h>
 #include <TList.h>
 #include <Math/Integrator.h>
+#include <Math/IntegratorOptions.h>
 #include <TStopwatch.h>
 
 #include "style.h"
@@ -37,7 +38,7 @@ void SmearSignal(TH1D *const hist, const double *params) {
     const double xMax = hist->GetXaxis()->GetXmax(); 
     const double maxY = amp + offset;
     
-    for (int ii = 0; ii < 1e4; ii++) {
+    for (int ii = 0; ii < 1e6; ii++) {
         double EE = 0;
         // Acceptance-Rejection sampling
         while (true) {
@@ -70,8 +71,8 @@ double Gaussian(double xx, double sigma) {
 
 // Continuous convolution of sine and Gaussian
 double convolvedFunction(const double xx, const double *params) {
-    ROOT::Math::IntegratorOneDim integrator;
-    // ROOT::Math::IntegratorOneDimOptions::SetDefaultIntegrator("Guass");
+    // ROOT::Math::IntegratorOneDim integrator;
+    ROOT::Math::IntegratorOneDim integrator(ROOT::Math::IntegrationOneDim::kADAPTIVE);
 
     auto integrand = [&](double x_prime) -> double {
         double sine_val = Sine(x_prime, params);          
@@ -79,17 +80,21 @@ double convolvedFunction(const double xx, const double *params) {
         return sine_val * gauss_val;
     };
 
-    integrator.SetRelTolerance(1e-4);
+    integrator.SetRelTolerance(1e-3);
     
     // Set lambda function to the integrator
     integrator.SetFunction(integrand);
 
     // Adjust integration limits based on sigma
-    const double x_min = xx - 15 * params[4];  
-    const double x_max = xx + 15 * params[4];  
+    const double x_min = xx - 10 * TMath::Abs(params[4]);
+    const double x_max = xx + 10 * TMath::Abs(params[4]);
     
     // Perform continuous integration
     double result = integrator.Integral(x_min, x_max);
+    if (integrator.Status() != 0) {
+    std::cerr << "Warning: Integration failed for xx = " << xx << std::endl;
+    return 0;  // or return some fallback value
+    }
 
     return result;
 }
@@ -101,8 +106,9 @@ TF1* CreateConvolution(const double* params) {
     };
 
     // Define convolution function in ROOT's TF1 class
-    TF1 *fitFunc = new TF1("fitFunc", convolved, 0, 50, 5); // xmin = 0, xmax = 100
+    TF1 *fitFunc = new TF1("fitFunc", convolved, 0, 50, 5);
     fitFunc->SetParameters(params);
+    fitFunc->SetNpx(1e5); 
     return fitFunc;
 }
 
@@ -137,11 +143,11 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     TMinuit Minuit(5);
     Minuit.SetFCN(fcn);
 
-    Minuit.DefineParameter(0, "Amplitude", params[0], 1, 0.1, 1e7);  // Amplitude
-    Minuit.DefineParameter(1, "Frequency", params[1], 0.01, 0.0, 1e4); // Frequency
-    Minuit.DefineParameter(2, "Phase", params[2], 0.1, 0.0, 1e3);      // Phase
-    Minuit.DefineParameter(3, "Offset", params[3], 0.1, 0, 1e3);     // Offset
-    Minuit.DefineParameter(4, "Sigma", params[4], 0.1, 0.0, 1e3);       // Sigma
+    Minuit.DefineParameter(0, "Amplitude", params[0], 0.1 * params[0], 0, 10 * params[0]);  // Amplitude
+    Minuit.DefineParameter(1, "Frequency", params[1], 0.1 * params[1], 0.1, 10 * params[1]); // Frequency
+    Minuit.DefineParameter(2, "Phase", params[2], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
+    Minuit.DefineParameter(3, "Offset", params[3], 0.1 * params[3], 0, 10 * params[3]);     // Offset
+    Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0.1, 10 * params[4]); // Sigma
 
     Minuit.Migrad();  // Perform the minimization
 
@@ -177,17 +183,17 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     gStyle->SetOptTitle(1);
     gHist->GetXaxis()->SetTitle("x-axis");
     gHist->GetYaxis()->SetTitle("y-axis");
-    gHist->GetYaxis()->SetRangeUser(0, 60);
+    gHist->GetYaxis()->SetRangeUser(0, 5e3);
 
     // Draw histogram and fit function
     style::ResetStyle(gHist);
     gHist->SetLineColor(kBlue);
-    gHist->SetLineWidth(1);
+    gHist->SetLineWidth(3);
     gHist->SetFillStyle(0);
     gHist->Draw();  // Draw after setting the title and axis labels
 
     fitFunc->SetLineColor(kRed);
-    fitFunc->SetLineWidth(2);
+    fitFunc->SetLineWidth(3);
     fitFunc->SetNpx(1e5);
     fitFunc->Draw("same");
 
@@ -257,47 +263,35 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
     }
 }
 
-// Extract sine initial guesses  using ROOT's internal fitting and calculate sigma from residuals
-void InitialGuess(double* params) {
+// Extract sine initial guesses  using ROOT's internal fitting
+void InitialGuess(double* params) {    
     TF1 *sineFit = new TF1("sineFit", "[0] * sin([1] * x + [2]) + [3]", 0, 50);
-    sineFit->SetParameters(5, 1, 0, 10);  // Initial guesses for amp, freq, phase, offset
+    sineFit->SetParameters(5, 1, 0, 10);  // Initial guesses for amplitude, frequency, phase, offset
     
-    // Perform the fit on the histogram
-    gHist->Fit(sineFit, "Q");  // 'Q' option makes the fit quiet (no printing)
-    
-    // Extract fitted parameters 
-    params[0] = sineFit->GetParameter(0);  // Amplitude
-    params[1] = sineFit->GetParameter(1);  // Frequency
-    params[2] = sineFit->GetParameter(2);  // Phase
-    params[3] = sineFit->GetParameter(3);  // Offset
+    gHist->Fit(sineFit, "NQ");  // Perform quiet fit
 
-    int nBins = gHist->GetNbinsX();
-    
-    // Create a histogram for residuals
-    TH1D *residualHist = new TH1D("residualHist", "Residuals", 500, -50, 50);
-    
-    // Loop over each bin to calculate residuals
-    for (int ii = 1; ii <= nBins; ii++) {
-        double xx = gHist->GetBinCenter(ii);
-        double data = gHist->GetBinContent(ii);
-        double fitValue = sineFit->Eval(xx); 
-        
-        double residual = data - fitValue;  // Calculate residual
-	residualHist->Fill(residual);  // Fill the residual histogram
+    // Extract fitted parameters and their errors
+    for (int ii = 0; ii < 4; ii++) {
+        params[ii] = sineFit->GetParameter(ii);
     }
+    params[4] = 1.0;  // Initial guess for sigma
 
-    // Fit the residuals to obtain a new estimate for sigma
-    TF1 *residualFit = new TF1("residualFit", "gaus", -50, 50);  // Gaussian fit for residuals
-    residualHist->Fit(residualFit, "Q");  // Fit residuals histogram
+    // // Hardcoded initial guesses
+    // params[0] = 5;  // Amplitude
+    // params[1] = 1.5; // Frequency
+    // params[2] = 1;  // Phase
+    // params[3] = 5;  // Offset
+    // params[4] = 0.5;  // Sigma initial (set as 1 for the smearing)
 
-    // Extract sigma from the fitted residuals
-    params[4] = residualFit->GetParameter(2);  // Set sigma from the residual fit
 
-    std::cout << "Initial sigma !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " << params[4] << std::endl;
+    // Log the fit results and errors
+    std::cout << "Initial Fit Results:" << std::endl;
+    std::cout << "Amplitude: " << params[0] << " ± " << sineFit->GetParError(0) << std::endl;
+    std::cout << "Frequency: " << params[1] << " ± " << sineFit->GetParError(1) << std::endl;
+    std::cout << "Phase: " << params[2] << " ± " << sineFit->GetParError(2) << std::endl;
+    std::cout << "Offset: " << params[3] << " ± " << sineFit->GetParError(3) << std::endl;
 
     delete sineFit;
-    delete residualFit;
-    delete residualHist;
 }
 
 int main() {
@@ -337,7 +331,7 @@ int main() {
 
     InitialGuess(guess);
 
-    IterativeFit(guess, errors, 10, 1e-6); // Iteration number, Convergence threshold
+    IterativeFit(guess, errors, 20, 1e-6); // Iteration number, Convergence threshold
 
     // Restore output to the default streams
     gSystem->RedirectOutput(0);
@@ -347,5 +341,4 @@ int main() {
 
     return 0;
 }
-
 
