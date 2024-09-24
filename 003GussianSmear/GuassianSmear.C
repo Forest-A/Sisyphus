@@ -66,34 +66,32 @@ double Sine(double xx, const double *params) {
 
 // Gaussian function
 double Gaussian(double xx, double sigma) {
-    return exp(-0.5 * xx * xx / (sigma * sigma));
+    return TMath::Gaus(xx, 0.0, sigma, true);
 }
 
 // Continuous convolution of sine and Gaussian
 double convolvedFunction(const double xx, const double *params) {
-    // ROOT::Math::IntegratorOneDim integrator;
     ROOT::Math::IntegratorOneDim integrator(ROOT::Math::IntegrationOneDim::kADAPTIVE);
+    const double xMin = gHist->GetXaxis()->GetXmin();
+    const double xMax = gHist->GetXaxis()->GetXmax();
+    const double norm = (-1.0 / params[1]) * (TMath::Cos(params[1] * xMax + params[2]) - TMath::Cos(params[1] * xMin + params[2])) + params[3] *( xMax - xMin);
 
     auto integrand = [&](double x_prime) -> double {
-        double sine_val = Sine(x_prime, params);          
-        double gauss_val = Gaussian(xx - x_prime, params[4]);  
+        double sine_val =  (TMath::Sin(params[1] * x_prime + params[2]) + params[3]) / norm;
+        double gauss_val =  Gaussian(xx - x_prime, params[4]);
         return sine_val * gauss_val;
     };
 
     integrator.SetRelTolerance(1e-3);
-    
-    // Set lambda function to the integrator
     integrator.SetFunction(integrand);
 
-    // Adjust integration limits based on sigma
-    const double x_min = xx - 10 * TMath::Abs(params[4]);
-    const double x_max = xx + 10 * TMath::Abs(params[4]);
-    
-    // Perform continuous integration
-    double result = integrator.Integral(x_min, x_max);
+    const double x_min = xx - 5 * TMath::Abs(params[4]);
+    const double x_max = xx + 5 * TMath::Abs(params[4]);
+
+    double result = params[0] * integrator.Integral(x_min, x_max);
     if (integrator.Status() != 0) {
-    std::cerr << "Warning: Integration failed for xx = " << xx << std::endl;
-    return 0;  // or return some fallback value
+        std::cerr << "Warning: Integration failed for xx = " << xx << std::endl;
+        return 0;
     }
 
     return result;
@@ -192,6 +190,15 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     gHist->SetFillStyle(0);
     gHist->Draw();  // Draw after setting the title and axis labels
 
+    // // Define a pure sine function without convolution
+    // TF1* pureSine = new TF1("pureSine", "[0] * (sin([1] * x + [2]) + [3])", 0, 50);
+    // pureSine->SetParameters(params[0], params[1], params[2], params[3]);
+    // pureSine->SetLineColor(kGreen);
+    // pureSine->SetLineStyle(2);
+    // pureSine->SetLineWidth(8);
+    // pureSine->Draw("same");
+
+
     fitFunc->SetLineColor(kRed);
     fitFunc->SetLineWidth(3);
     fitFunc->SetNpx(1e5);
@@ -265,7 +272,7 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
 
 // Extract sine initial guesses  using ROOT's internal fitting
 void InitialGuess(double* params) {    
-    TF1 *sineFit = new TF1("sineFit", "[0] * sin([1] * x + [2]) + [3]", 0, 50);
+    TF1 *sineFit = new TF1("sineFit", "[0] / [1] * sin([1] * x + [2]) + [3]", 0, 50);
     sineFit->SetParameters(5, 1, 0, 10);  // Initial guesses for amplitude, frequency, phase, offset
     
     gHist->Fit(sineFit, "NQ");  // Perform quiet fit
@@ -275,14 +282,6 @@ void InitialGuess(double* params) {
         params[ii] = sineFit->GetParameter(ii);
     }
     params[4] = 1.0;  // Initial guess for sigma
-
-    // // Hardcoded initial guesses
-    // params[0] = 5;  // Amplitude
-    // params[1] = 1.5; // Frequency
-    // params[2] = 1;  // Phase
-    // params[3] = 5;  // Offset
-    // params[4] = 0.5;  // Sigma initial (set as 1 for the smearing)
-
 
     // Log the fit results and errors
     std::cout << "Initial Fit Results:" << std::endl;
@@ -341,4 +340,3 @@ int main() {
 
     return 0;
 }
-
