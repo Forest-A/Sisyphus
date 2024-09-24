@@ -112,7 +112,8 @@ double convolvedFunction(const double xx, const double *params) {
     // Ensure integrator is valid before SetFunction
     if (gIntegrator) {
         gIntegrator->SetFunction(integrand);
-    } else {
+    }
+    else {
         std::cerr << "Error: Integrator not initialized!" << std::endl;
         return 0;
     }
