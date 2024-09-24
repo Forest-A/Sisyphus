@@ -80,7 +80,7 @@ ERR MATRIX APPROXIMATE
         5  0.31124   0.103 -0.169 -0.095 -0.217  1.000
  ERR MATRIX APPROXIMATE
 ////////////////////////////Iteration 1: Chi2 = 43268.3////////////////////////////
-Iteration 1 took: 2.73796seconds (real time), 2.74 seconds (CPU time).
+Iteration 1 took: 2.75442seconds (real time), 2.75 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -130,7 +130,7 @@ ERR MATRIX APPROXIMATE
         5  0.40938   0.389  0.398 -0.399 -0.399  1.000
  ERR MATRIX APPROXIMATE
 ////////////////////////////Iteration 2: Chi2 = 22939.1////////////////////////////
-Iteration 2 took: 2.65118seconds (real time), 2.62 seconds (CPU time).
+Iteration 2 took: 2.69267seconds (real time), 2.69 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -194,7 +194,7 @@ ERR MATRIX NOT POS-DEF
         5  0.99122  -0.241  0.691 -0.623  0.669  1.000
  ERR MATRIX NOT POS-DEF
 ////////////////////////////Iteration 3: Chi2 = 22758.2////////////////////////////
-Iteration 3 took: 2.80895seconds (real time), 2.74 seconds (CPU time).
+Iteration 3 took: 2.70732seconds (real time), 2.7 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -244,7 +244,7 @@ ERR MATRIX APPROXIMATE
         5  0.99867   0.414 -0.433 -0.750 -0.578  1.000
  ERR MATRIX APPROXIMATE
 ////////////////////////////Iteration 4: Chi2 = 21331.7////////////////////////////
-Iteration 4 took: 2.80841seconds (real time), 2.73 seconds (CPU time).
+Iteration 4 took: 2.64659seconds (real time), 2.64 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -294,7 +294,7 @@ ERR MATRIX APPROXIMATE
         5  0.98049   0.890  0.912 -0.927 -0.923  1.000
  ERR MATRIX APPROXIMATE
 ////////////////////////////Iteration 5: Chi2 = 17166.3////////////////////////////
-Iteration 5 took: 2.80461seconds (real time), 2.79 seconds (CPU time).
+Iteration 5 took: 2.92477seconds (real time), 2.93 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -344,7 +344,7 @@ ERR MATRIX APPROXIMATE
         5  0.86650   0.841  0.836 -0.837 -0.856  1.000
  ERR MATRIX APPROXIMATE
 ////////////////////////////Iteration 6: Chi2 = 15317////////////////////////////
-Iteration 6 took: 2.61606seconds (real time), 2.61 seconds (CPU time).
+Iteration 6 took: 2.58992seconds (real time), 2.58 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -419,7 +419,7 @@ Iteration 6 took: 2.61606seconds (real time), 2.61 seconds (CPU time).
         4  0.99555  -0.581  0.043 -0.031  1.000 -0.968
         5  0.98494   0.690 -0.225  0.194 -0.968  1.000
 ////////////////////////////Iteration 7: Chi2 = 8664.2////////////////////////////
-Iteration 7 took: 2.61584seconds (real time), 2.61 seconds (CPU time).
+Iteration 7 took: 2.57071seconds (real time), 2.57 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -482,6 +482,6 @@ Iteration 7 took: 2.61584seconds (real time), 2.61 seconds (CPU time).
         4  0.99993  -0.985  0.277 -0.211  1.000 -0.999
         5  0.99975   0.988 -0.299  0.232 -0.999  1.000
 ////////////////////////////Iteration 8: Chi2 = 8664.2////////////////////////////
-Iteration 8 took: 0.868643seconds (real time), 0.86 seconds (CPU time).
+Iteration 8 took: 0.809802seconds (real time), 0.81 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
 Converged after 8 iterations.

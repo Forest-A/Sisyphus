@@ -19,7 +19,24 @@
 TRandom3 gRand(123);
 TH1D *gHist = nullptr;
 TCanvas *gCanvas = nullptr;
-TList *plotList = nullptr;  
+TList *plotList = nullptr;
+
+// Global constants for the integrator and axis limits
+const double gkxMax = 50.0;
+const double gkxMin = 0.0;
+ROOT::Math::IntegratorOneDim *gIntegrator = nullptr;
+
+// Initialize the integrator
+void InitializeIntegrator() {
+    if (!gIntegrator) {
+        gIntegrator = new ROOT::Math::IntegratorOneDim(ROOT::Math::IntegrationOneDim::kADAPTIVE);
+        if (gIntegrator) {
+            gIntegrator->SetRelTolerance(1e-3);
+        } else {
+            std::cerr << "Error: Failed to initialize the integrator!" << std::endl;
+        }
+    }
+}
 
 // Generate sine values
 void SmearSignal(TH1D *const hist, const double *params) {
@@ -59,37 +76,48 @@ void SmearSignal(TH1D *const hist, const double *params) {
     }
 }
 
-// Sine function
-double Sine(double xx, const double *params) {
-  return params[0] * sin(params[1] * xx + params[2]) + params[3];
-}
+// // Sine function
+// double Sine(double xx, const double *params) {
+//   return params[0] * sin(params[1] * xx + params[2]) + params[3];
+// }
 
 // Gaussian function
 double Gaussian(double xx, double sigma) {
     return TMath::Gaus(xx, 0.0, sigma, true);
 }
 
+double Integrand(double x_prime, double xx, const double *params) {
+    double sine_val = (TMath::Sin(params[1] * x_prime + params[2]) + params[3]) / 
+                      ((-1.0 / params[1]) * (TMath::Cos(params[1] * gkxMax + params[2]) - 
+                                             TMath::Cos(params[1] * gkxMin + params[2])) + 
+                      params[3] * (gkxMax - gkxMin));
+    double gauss_val = Gaussian(xx - x_prime, params[4]);
+    return sine_val * gauss_val;
+}
+
 // Continuous convolution of sine and Gaussian
 double convolvedFunction(const double xx, const double *params) {
-    ROOT::Math::IntegratorOneDim integrator(ROOT::Math::IntegrationOneDim::kADAPTIVE);
-    const double xMin = gHist->GetXaxis()->GetXmin();
-    const double xMax = gHist->GetXaxis()->GetXmax();
-    const double norm = (-1.0 / params[1]) * (TMath::Cos(params[1] * xMax + params[2]) - TMath::Cos(params[1] * xMin + params[2])) + params[3] *( xMax - xMin);
-
-    auto integrand = [&](double x_prime) -> double {
-        double sine_val =  (TMath::Sin(params[1] * x_prime + params[2]) + params[3]) / norm;
-        double gauss_val =  Gaussian(xx - x_prime, params[4]);
-        return sine_val * gauss_val;
-    };
-
-    integrator.SetRelTolerance(1e-3);
-    integrator.SetFunction(integrand);
+    if (!gIntegrator) {
+        InitializeIntegrator();
+    }
 
     const double x_min = xx - 5 * TMath::Abs(params[4]);
     const double x_max = xx + 5 * TMath::Abs(params[4]);
 
-    double result = params[0] * integrator.Integral(x_min, x_max);
-    if (integrator.Status() != 0) {
+    auto integrand = [&](double x_prime) {
+        return Integrand(x_prime, xx, params);
+    };
+
+    // Ensure integrator is valid before SetFunction
+    if (gIntegrator) {
+        gIntegrator->SetFunction(integrand);
+    } else {
+        std::cerr << "Error: Integrator not initialized!" << std::endl;
+        return 0;
+    }
+
+    double result = params[0] * gIntegrator->Integral(x_min, x_max);
+    if (gIntegrator->Status() != 0) {
         std::cerr << "Warning: Integration failed for xx = " << xx << std::endl;
         return 0;
     }
@@ -198,6 +226,15 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     // pureSine->SetLineWidth(8);
     // pureSine->Draw("same");
 
+    // // p[a]=p[1], p[b]=p[0]/p[1]
+    // double trueParams[5] = {1.6e5, 1, 0, 10, 3}; 
+
+    // TF1 *trueFunc = CreateConvolution(trueParams);
+    // trueFunc->SetLineColor(kGreen);
+    // trueFunc->SetLineWidth(3);
+    // trueFunc->SetLineStyle(2);  // Dotted line for the true curve
+    // trueFunc->Draw("same");
+
 
     fitFunc->SetLineColor(kRed);
     fitFunc->SetLineWidth(3);
@@ -271,7 +308,7 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
 }
 
 // Extract sine initial guesses  using ROOT's internal fitting
-void InitialGuess(double* params) {    
+void InitialGuess(double* params) {
     TF1 *sineFit = new TF1("sineFit", "[0] / [1] * sin([1] * x + [2]) + [3]", 0, 50);
     sineFit->SetParameters(5, 1, 0, 10);  // Initial guesses for amplitude, frequency, phase, offset
     
@@ -325,7 +362,7 @@ int main() {
     // Perform smearing of the sine signal with Gaussian noise
     SmearSignal(gHist, params);
 
-    double guess[5]; 
+    double guess[5];
     double errors[5];
 
     InitialGuess(guess);
