@@ -32,7 +32,8 @@ void InitializeIntegrator() {
         gIntegrator = new ROOT::Math::IntegratorOneDim(ROOT::Math::IntegrationOneDim::kADAPTIVE);
         if (gIntegrator) {
             gIntegrator->SetRelTolerance(1e-3);
-        } else {
+        }
+	else {
             std::cerr << "Error: Failed to initialize the integrator!" << std::endl;
         }
     }
