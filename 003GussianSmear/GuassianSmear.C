@@ -26,18 +26,9 @@ const double gkxMax = 50.0;
 const double gkxMin = 0.0;
 ROOT::Math::IntegratorOneDim *gIntegrator = nullptr;
 
-// Initialize the integrator
-void InitializeIntegrator() {
-    if (!gIntegrator) {
-        gIntegrator = new ROOT::Math::IntegratorOneDim(ROOT::Math::IntegrationOneDim::kADAPTIVE);
-        if (gIntegrator) {
-            gIntegrator->SetRelTolerance(1e-3);
-        }
-	else {
-            std::cerr << "Error: Failed to initialize the integrator!" << std::endl;
-        }
-    }
-}
+// Global variable for params and xx
+const double* gParams = nullptr;
+double gXX = 0;
 
 // Generate sine values
 void SmearSignal(TH1D *const hist, const double *params) {
@@ -87,14 +78,39 @@ double Gaussian(double xx, double sigma) {
     return TMath::Gaus(xx, 0.0, sigma, true);
 }
 
-double Integrand(double x_prime, double xx, const double *params) {
-    double sine_val = (TMath::Sin(params[1] * x_prime + params[2]) + params[3]) / 
-                      ((-1.0 / params[1]) * (TMath::Cos(params[1] * gkxMax + params[2]) - 
-                                             TMath::Cos(params[1] * gkxMin + params[2])) + 
-                      params[3] * (gkxMax - gkxMin));
-    double gauss_val = Gaussian(xx - x_prime, params[4]);
+// double Integrand(double x_prime, double xx, const double *params) {
+//     double sine_val = (TMath::Sin(params[1] * x_prime + params[2]) + params[3]) / 
+//                       ((-1.0 / params[1]) * (TMath::Cos(params[1] * gkxMax + params[2]) - 
+//                                              TMath::Cos(params[1] * gkxMin + params[2])) + 
+//                       params[3] * (gkxMax - gkxMin));
+//     double gauss_val = Gaussian(xx - x_prime, params[4]);
+//     return sine_val * gauss_val;
+// }
+
+// Integrand function 
+double Integrand(double x_prime) {
+    double sine_val = (TMath::Sin(gParams[1] * x_prime + gParams[2]) + gParams[3]) / 
+                      ((-1.0 / gParams[1]) * (TMath::Cos(gParams[1] * gkxMax + gParams[2]) - 
+                                                     TMath::Cos(gParams[1] * gkxMin + gParams[2])) + 
+                      gParams[3] * (gkxMax - gkxMin));
+    double gauss_val = Gaussian(gXX - x_prime, gParams[4]);
     return sine_val * gauss_val;
 }
+
+// Initialize the integrator and set the function once
+void InitializeIntegrator() {
+    if (!gIntegrator) {
+        gIntegrator = new ROOT::Math::IntegratorOneDim(ROOT::Math::IntegrationOneDim::kADAPTIVE);
+        if (gIntegrator) {
+            gIntegrator->SetRelTolerance(1e-3);
+            gIntegrator->SetFunction(Integrand);  // Set the function only once
+        }
+        else {
+            std::cerr << "Error: Failed to initialize the integrator!" << std::endl;
+        }
+    }
+}
+
 
 // Continuous convolution of sine and Gaussian
 double convolvedFunction(const double xx, const double *params) {
@@ -102,23 +118,15 @@ double convolvedFunction(const double xx, const double *params) {
         InitializeIntegrator();
     }
 
+    // Set global variables for the integrand
+    gParams = params;
+    gXX = xx;
+
     const double x_min = xx - 5 * TMath::Abs(params[4]);
     const double x_max = xx + 5 * TMath::Abs(params[4]);
 
-    auto integrand = [&](double x_prime) {
-        return Integrand(x_prime, xx, params);
-    };
-
-    // Ensure integrator is valid before SetFunction
-    if (gIntegrator) {
-        gIntegrator->SetFunction(integrand);
-    }
-    else {
-        std::cerr << "Error: Integrator not initialized!" << std::endl;
-        return 0;
-    }
-
     double result = params[0] * gIntegrator->Integral(x_min, x_max);
+    
     if (gIntegrator->Status() != 0) {
         std::cerr << "Warning: Integration failed for xx = " << xx << std::endl;
         return 0;
@@ -126,6 +134,7 @@ double convolvedFunction(const double xx, const double *params) {
 
     return result;
 }
+
 
 // Define a ROOT-compatible function using TF1 for the convolution
 TF1* CreateConvolution(const double* params) {
@@ -237,7 +246,19 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     // trueFunc->SetLineStyle(2);  // Dotted line for the true curve
     // trueFunc->Draw("same");
 
+    // TF1* sineFunc = new TF1("sineFunc", "[0] * sin([1] * x + [2]) + [3]", gkxMin, gkxMax);
+    // sineFunc->SetParameters(params[0], params[1], params[2], params[3]);
+    // sineFunc->SetLineColor(kGreen);
+    // sineFunc->Draw();
+    // gCanvas->Print("outplot/SineVal.png");
 
+    // TF1* convFunc = new TF1("convFunc", convolvedFunction, gkxMin, gkxMax, 5);
+    // convFunc->SetParameters(params);
+    // convFunc->SetLineColor(kOrange);
+    // convFunc->Draw();
+    // gCanvas->Print("outplot/ConvolvedFunction.png");
+
+    
     fitFunc->SetLineColor(kRed);
     fitFunc->SetLineWidth(3);
     fitFunc->SetNpx(1e5);
