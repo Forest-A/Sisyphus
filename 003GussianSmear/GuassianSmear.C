@@ -15,6 +15,10 @@
 
 #include "style.h"
 
+//Testing
+TH1D *gSineHist = new TH1D("gSineHist", "Sine Values Distribution", 500, -2, 2);
+TH1D *gConvolutedHist = new TH1D("gConvolutedHist", "Convoluted Function Distribution", 500, -5, 5);
+
 // Global pointers to the random number generator and histogram
 TRandom3 gRand(123);
 TH1D *gHist = nullptr;
@@ -94,6 +98,8 @@ double Integrand(double x_prime) {
                                                      TMath::Cos(gParams[1] * gkxMin + gParams[2])) + 
                       gParams[3] * (gkxMax - gkxMin));
     double gauss_val = Gaussian(gXX - x_prime, gParams[4]);
+
+    gSineHist->Fill(sine_val);
     return sine_val * gauss_val;
 }
 
@@ -126,7 +132,7 @@ double convolvedFunction(const double xx, const double *params) {
     const double x_max = xx + 5 * TMath::Abs(params[4]);
 
     double result = params[0] * gIntegrator->Integral(x_min, x_max);
-    
+  
     if (gIntegrator->Status() != 0) {
         std::cerr << "Warning: Integration failed for xx = " << xx << std::endl;
         return 0;
@@ -202,6 +208,44 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     Minuit.mnstat(amin, edm, errdef, nvpar, nparx, icstat);
     chi2 = amin;
 
+    // // Now you can use these values for diagnostics
+    // std::cout << "Minimum value (amin): " << amin << std::endl;
+    // std::cout << "Estimated distance to minimum (edm): " << edm << std::endl;
+    // std::cout << "Error definition (errdef): " << errdef << std::endl;
+    // std::cout << "Number of variable parameters (nvpar): " << nvpar << std::endl;
+    // std::cout << "Number of fixed parameters (nparx): " << nparx << std::endl;
+    // std::cout << "Fitting status (icstat): " << icstat << std::endl;
+
+    // Calculate and print the correlation matrix
+    double covMatrix[5][5];
+    gMinuit->mnemat(&covMatrix[0][0], 5); // Get covariance matrix
+
+    std::cout << "Parameter correlations:" << std::endl;
+    // for (int ii = 0; ii < 5; ii++) {
+    //     for (int jj = 0; jj < 5; jj++) {
+    //         if (ii != jj) {  // Calculate correlation only for different parameters
+    //             double correlation = covMatrix[ii][jj] / (TMath::Sqrt(covMatrix[ii][ii] * covMatrix[jj][jj]));
+    //             std::cout << "Correlation between parameter " << ii << " and " << jj << ": " << correlation << std::endl;
+    //         }
+    //     }
+    // }
+
+    // Print the correlation matrix
+    std::cout << "//////////////////////////////Correlation Matrix://///////////////////////////////" << std::endl;
+    for (int ii = 0; ii < nvpar; ii++) {
+        for (int jj = 0; jj < nvpar; jj++) {
+	  if (ii != jj) {  // Calculate correlation only for different parameters
+	     // Get the correlation  normalising the covariance: Corr(i,j) = Cov(i,j)/sqrt(Cov(i,i)*Cov(j,j))
+	    double correlation = covMatrix[ii][jj] / (TMath::Sqrt(covMatrix[ii][ii] * covMatrix[jj][jj]));
+            std::cout << correlation  << "\t"; // Tab
+	  }
+        }
+        std::cout << std::endl; // Newline after each row
+    }
+    // std::cout << "//////////////////////////// Correlation matrix: ////////////////////////////"<< std::endl;
+    // Minuit.mnmatu(1); // Print covariance matrix and correlation coefficients
+ 
+
     return Minuit.GetStatus();  // Return fit status
 }
 
@@ -245,12 +289,6 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     // trueFunc->SetLineWidth(3);
     // trueFunc->SetLineStyle(2);  // Dotted line for the true curve
     // trueFunc->Draw("same");
-
-    // TF1* sineFunc = new TF1("sineFunc", "[0] * sin([1] * x + [2]) + [3]", gkxMin, gkxMax);
-    // sineFunc->SetParameters(params[0], params[1], params[2], params[3]);
-    // sineFunc->SetLineColor(kGreen);
-    // sineFunc->Draw();
-    // gCanvas->Print("outplot/SineVal.png");
 
     // TF1* convFunc = new TF1("convFunc", convolvedFunction, gkxMin, gkxMax, 5);
     // convFunc->SetParameters(params);
@@ -301,7 +339,7 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
         const int status = SingleFit(fitFunc, params, errors, currentChi2);
 
         // Output the chi-squared value for this iteration
-        std::cout << "////////////////////////////Iteration " << ii + 1 << ": Chi2 = " << currentChi2 << "////////////////////////////" << std::endl;
+        std::cout << "////////////////////////////Iteration " << ii + 1 << ": Chi2 = " << currentChi2 << "///////////////////////////" << std::endl;
 
         // Plot and store the results for this iteration
         PlotSineFit(ii + 1, fitFunc, params, errors);
@@ -394,6 +432,26 @@ int main() {
 
     // Restore output to the default streams
     gSystem->RedirectOutput(0);
+
+    TCanvas *sineCanvas = new TCanvas("sineCanvas", "Sine Values", 800, 600);
+    gSineHist->SetTitle("Distribution of Sine Values");
+    gSineHist->Draw();  // Draw the histogram
+    sineCanvas->Print("outplot/SineValues.png");
+
+    TCanvas *convCanvas = new TCanvas("convolutedCanvas", "Convoluted Function Values", 800, 600);
+    // Define different parameter sets for plotting
+    double params1[5] = {1.0, 2.0, 0, 0, 7.0}; // First set of parameters
+
+    // Create convolution functions with different parameters
+    TF1* fitFunc1 = CreateConvolution(params1);
+
+    // Draw the first convolution function
+    fitFunc1->SetLineColor(kRed);
+    fitFunc1->SetTitle("Convolution Functions");
+    fitFunc1->Draw();
+
+    convCanvas->Update(); // Update the canvas
+    convCanvas->Print("outplot/ConvolutionFunction.png"); // Save the plot
     
     delete gHist;
     delete gCanvas;
