@@ -15,10 +15,6 @@
 
 #include "style.h"
 
-//Testing
-TH1D *gSineHist = new TH1D("gSineHist", "Sine Values Distribution", 500, -2, 2);
-TH1D *gConvolutedHist = new TH1D("gConvolutedHist", "Convoluted Function Distribution", 500, -5, 5);
-
 // Global pointers to the random number generator and histogram
 TRandom3 gRand(123);
 TH1D *gHist = nullptr;
@@ -72,34 +68,24 @@ void SmearSignal(TH1D *const hist, const double *params) {
     }
 }
 
-// // Sine function
-// double Sine(double xx, const double *params) {
-//   return params[0] * sin(params[1] * xx + params[2]) + params[3];
-// }
+// Sine function
+double Sine(double xx, const double *params) {
+  return (TMath::Sin(params[1] * xx + params[2]) + params[3]) /
+         ((-1.0 / params[1]) * (TMath::Cos(params[1] * gkxMax + params[2]) - 
+                                TMath::Cos(params[1] * gkxMin + params[2])) + 
+                                params[3] * (gkxMax - gkxMin));
+}
 
 // Gaussian function
 double Gaussian(double xx, double sigma) {
     return TMath::Gaus(xx, 0.0, sigma, true);
 }
 
-// double Integrand(double x_prime, double xx, const double *params) {
-//     double sine_val = (TMath::Sin(params[1] * x_prime + params[2]) + params[3]) / 
-//                       ((-1.0 / params[1]) * (TMath::Cos(params[1] * gkxMax + params[2]) - 
-//                                              TMath::Cos(params[1] * gkxMin + params[2])) + 
-//                       params[3] * (gkxMax - gkxMin));
-//     double gauss_val = Gaussian(xx - x_prime, params[4]);
-//     return sine_val * gauss_val;
-// }
-
 // Integrand function 
 double Integrand(double x_prime) {
-    double sine_val = (TMath::Sin(gParams[1] * x_prime + gParams[2]) + gParams[3]) / 
-                      ((-1.0 / gParams[1]) * (TMath::Cos(gParams[1] * gkxMax + gParams[2]) - 
-                                                     TMath::Cos(gParams[1] * gkxMin + gParams[2])) + 
-                      gParams[3] * (gkxMax - gkxMin));
+    double sine_val = Sine (x_prime, gParams);
     double gauss_val = Gaussian(gXX - x_prime, gParams[4]);
 
-    gSineHist->Fill(sine_val);
     return sine_val * gauss_val;
 }
 
@@ -271,31 +257,7 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     gHist->SetLineColor(kBlue);
     gHist->SetLineWidth(3);
     gHist->SetFillStyle(0);
-    gHist->Draw();  // Draw after setting the title and axis labels
-
-    // // Define a pure sine function without convolution
-    // TF1* pureSine = new TF1("pureSine", "[0] * (sin([1] * x + [2]) + [3])", 0, 50);
-    // pureSine->SetParameters(params[0], params[1], params[2], params[3]);
-    // pureSine->SetLineColor(kGreen);
-    // pureSine->SetLineStyle(2);
-    // pureSine->SetLineWidth(8);
-    // pureSine->Draw("same");
-
-    // // p[a]=p[1], p[b]=p[0]/p[1]
-    // double trueParams[5] = {1.6e5, 1, 0, 10, 3}; 
-
-    // TF1 *trueFunc = CreateConvolution(trueParams);
-    // trueFunc->SetLineColor(kGreen);
-    // trueFunc->SetLineWidth(3);
-    // trueFunc->SetLineStyle(2);  // Dotted line for the true curve
-    // trueFunc->Draw("same");
-
-    // TF1* convFunc = new TF1("convFunc", convolvedFunction, gkxMin, gkxMax, 5);
-    // convFunc->SetParameters(params);
-    // convFunc->SetLineColor(kOrange);
-    // convFunc->Draw();
-    // gCanvas->Print("outplot/ConvolvedFunction.png");
-
+    gHist->Draw();  // Draw after setting the title and axis label
     
     fitFunc->SetLineColor(kRed);
     fitFunc->SetLineWidth(3);
@@ -391,6 +353,19 @@ void InitialGuess(double* params) {
     delete sineFit;
 }
 
+TF1* CreateSineFunction(const double* params) {
+    // Lambda function for ROOT's TF1
+    auto sineFunction = [&](double* x, double* par) {
+        return Sine(x[0], par);
+    };
+
+    // Define sine function in ROOT's TF1 class
+    TF1* fitFunc = new TF1("fitFunc", sineFunction, gkxMin, gkxMax, 4); // 4 parameters
+    fitFunc->SetParameters(params); // Set parameters
+    fitFunc->SetNpx(1e5); // Set number of points for plotting
+    return fitFunc;
+}
+
 int main() {
     // Redirect ROOT output to the log file
     const Int_t status = gSystem->RedirectOutput("outplot/see.log", "w");  // "w" to overwrite the file
@@ -433,26 +408,26 @@ int main() {
     // Restore output to the default streams
     gSystem->RedirectOutput(0);
 
-    TCanvas *sineCanvas = new TCanvas("sineCanvas", "Sine Values", 800, 600);
-    gSineHist->SetTitle("Distribution of Sine Values");
-    gSineHist->Draw();  // Draw the histogram
-    sineCanvas->Print("outplot/SineValues.png");
-
-    TCanvas *convCanvas = new TCanvas("convolutedCanvas", "Convoluted Function Values", 800, 600);
-    // Define different parameter sets for plotting
-    double params1[5] = {1.0, 2.0, 0, 0, 7.0}; // First set of parameters
-
-    // Create convolution functions with different parameters
-    TF1* fitFunc1 = CreateConvolution(params1);
-
-    // Draw the first convolution function
-    fitFunc1->SetLineColor(kRed);
-    fitFunc1->SetTitle("Convolution Functions");
-    fitFunc1->Draw();
-
-    convCanvas->Update(); // Update the canvas
-    convCanvas->Print("outplot/ConvolutionFunction.png"); // Save the plot
+   // // Create a canvas
+   //  TCanvas *sineCanvas = new TCanvas("sineCanvas", "Sine Function Plot", 800, 600);
     
+   //  // Example parameters for the sine function
+   //  double params1[4] = {1.0, 2.0, 0.0, 15.0}; 
+
+   //  // Create the sine function using the wrapper
+   //  TF1* fitFunc = CreateSineFunction(params1);
+
+   //  // Draw the function
+   //  fitFunc->SetLineColor(kRed);
+   //  fitFunc->SetTitle("Sine Function");
+   //  fitFunc->Draw();
+
+   //  // Update the canvas and save the plot
+   //  sineCanvas->Update();  
+   //  gSystem->Exec("mkdir -p outplot"); 
+   //  sineCanvas->Print("outplot/SineValues.png"); 
+
+
     delete gHist;
     delete gCanvas;
 

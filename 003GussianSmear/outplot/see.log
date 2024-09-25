@@ -87,7 +87,7 @@ Parameter correlations:
 0.308986	0.617989	0.698945	-0.21693	
 0.1031	-0.169097	-0.0951447	-0.21693	
 ////////////////////////////Iteration 1: Chi2 = 43268.3///////////////////////////
-Iteration 1 took: 3.9538seconds (real time), 3.75 seconds (CPU time).
+Iteration 1 took: 2.75564seconds (real time), 2.74 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -144,7 +144,7 @@ Parameter correlations:
 -0.993572	-0.99801	0.999305	-0.398955	
 0.389059	0.397697	-0.398665	-0.398955	
 ////////////////////////////Iteration 2: Chi2 = 22939.1///////////////////////////
-Iteration 2 took: 3.53641seconds (real time), 3.49 seconds (CPU time).
+Iteration 2 took: 2.63203seconds (real time), 2.64 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -215,7 +215,7 @@ Parameter correlations:
 -0.665021	0.997853	-0.990877	0.669484	
 -0.241444	0.691233	-0.622728	0.669484	
 ////////////////////////////Iteration 3: Chi2 = 22758.2///////////////////////////
-Iteration 3 took: 3.52026seconds (real time), 3.45 seconds (CPU time).
+Iteration 3 took: 2.68541seconds (real time), 2.68 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -272,7 +272,7 @@ Parameter correlations:
 -0.975487	0.968741	0.892614	-0.577569	
 0.413588	-0.433412	-0.749632	-0.577569	
 ////////////////////////////Iteration 4: Chi2 = 21331.7///////////////////////////
-Iteration 4 took: 3.18659seconds (real time), 3.17 seconds (CPU time).
+Iteration 4 took: 2.9893seconds (real time), 2.92 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -329,7 +329,7 @@ Parameter correlations:
 -0.982694	-0.996489	0.998238	-0.922876	
 0.889995	0.911742	-0.926519	-0.922876	
 ////////////////////////////Iteration 5: Chi2 = 17166.3///////////////////////////
-Iteration 5 took: 3.51455seconds (real time), 3.47 seconds (CPU time).
+Iteration 5 took: 2.73799seconds (real time), 2.74 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -386,7 +386,7 @@ Parameter correlations:
 -0.987488	-0.984316	0.982987	-0.855834	
 0.841071	0.835631	-0.837066	-0.855834	
 ////////////////////////////Iteration 6: Chi2 = 15317///////////////////////////
-Iteration 6 took: 3.22521seconds (real time), 3.21 seconds (CPU time).
+Iteration 6 took: 2.95669seconds (real time), 2.95 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -468,7 +468,7 @@ Parameter correlations:
 -0.581338	0.0426941	-0.0309831	-0.967572	
 0.690487	-0.225264	0.193515	-0.967572	
 ////////////////////////////Iteration 7: Chi2 = 8664.2///////////////////////////
-Iteration 7 took: 3.24424seconds (real time), 3.23 seconds (CPU time).
+Iteration 7 took: 2.78599seconds (real time), 2.78 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -538,6 +538,6 @@ Parameter correlations:
 -0.984604	0.276597	-0.21115	-0.999459	
 0.987642	-0.299447	0.231831	-0.999459	
 ////////////////////////////Iteration 8: Chi2 = 8664.2///////////////////////////
-Iteration 8 took: 1.0128seconds (real time), 1.01 seconds (CPU time).
+Iteration 8 took: 0.825335seconds (real time), 0.83 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
 Converged after 8 iterations.
