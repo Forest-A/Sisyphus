@@ -68,12 +68,25 @@ void SmearSignal(TH1D *const hist, const double *params) {
     }
 }
 
+// // Sine function
+// double Sine(double xx, const double *params) {
+//   return (TMath::Sin(params[1] * xx + params[2]) + params[3]) /
+//          ((-1.0 / params[1]) * (TMath::Cos(params[1] * gkxMax + params[2]) - 
+//                                 TMath::Cos(params[1] * gkxMin + params[2])) + 
+//                                 params[3] * (gkxMax - gkxMin));
+// }
+
 // Sine function
 double Sine(double xx, const double *params) {
-  return (TMath::Sin(params[1] * xx + params[2]) + params[3]) /
-         ((-1.0 / params[1]) * (TMath::Cos(params[1] * gkxMax + params[2]) - 
-                                TMath::Cos(params[1] * gkxMin + params[2])) + 
-                                params[3] * (gkxMax - gkxMin));
+  double p1 = params[0]; // Amplitude
+  double p2 = params[1]; // frequency
+  double p3 = params[2]; // phase
+  double uu = 1 / (gkxMax - gkxMin) *
+    (1 + p1 / p2 * ((TMath::Cos(p2 * gkxMax + p3) - 
+                     TMath::Cos(p2 * gkxMin + p3)))); 
+
+  //substitute p4 for params[3] in the sine function expression
+  return p1 * TMath::Sin(p2 * xx + p3) + uu;
 }
 
 // Gaussian function
@@ -92,9 +105,9 @@ double Integrand(double x_prime) {
 // Initialize the integrator and set the function once
 void InitializeIntegrator() {
     if (!gIntegrator) {
-        gIntegrator = new ROOT::Math::IntegratorOneDim(ROOT::Math::IntegrationOneDim::kADAPTIVE);
+        gIntegrator = new ROOT::Math::IntegratorOneDim(ROOT::Math::IntegrationOneDim::kADAPTIVESINGULAR);
         if (gIntegrator) {
-            gIntegrator->SetRelTolerance(1e-3);
+            gIntegrator->SetRelTolerance(1e-4);
             gIntegrator->SetFunction(Integrand);  // Set the function only once
         }
         else {
@@ -194,44 +207,6 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     Minuit.mnstat(amin, edm, errdef, nvpar, nparx, icstat);
     chi2 = amin;
 
-    // // Now you can use these values for diagnostics
-    // std::cout << "Minimum value (amin): " << amin << std::endl;
-    // std::cout << "Estimated distance to minimum (edm): " << edm << std::endl;
-    // std::cout << "Error definition (errdef): " << errdef << std::endl;
-    // std::cout << "Number of variable parameters (nvpar): " << nvpar << std::endl;
-    // std::cout << "Number of fixed parameters (nparx): " << nparx << std::endl;
-    // std::cout << "Fitting status (icstat): " << icstat << std::endl;
-
-    // Calculate and print the correlation matrix
-    double covMatrix[5][5];
-    gMinuit->mnemat(&covMatrix[0][0], 5); // Get covariance matrix
-
-    std::cout << "Parameter correlations:" << std::endl;
-    // for (int ii = 0; ii < 5; ii++) {
-    //     for (int jj = 0; jj < 5; jj++) {
-    //         if (ii != jj) {  // Calculate correlation only for different parameters
-    //             double correlation = covMatrix[ii][jj] / (TMath::Sqrt(covMatrix[ii][ii] * covMatrix[jj][jj]));
-    //             std::cout << "Correlation between parameter " << ii << " and " << jj << ": " << correlation << std::endl;
-    //         }
-    //     }
-    // }
-
-    // Print the correlation matrix
-    std::cout << "//////////////////////////////Correlation Matrix://///////////////////////////////" << std::endl;
-    for (int ii = 0; ii < nvpar; ii++) {
-        for (int jj = 0; jj < nvpar; jj++) {
-	  if (ii != jj) {  // Calculate correlation only for different parameters
-	     // Get the correlation  normalising the covariance: Corr(i,j) = Cov(i,j)/sqrt(Cov(i,i)*Cov(j,j))
-	    double correlation = covMatrix[ii][jj] / (TMath::Sqrt(covMatrix[ii][ii] * covMatrix[jj][jj]));
-            std::cout << correlation  << "\t"; // Tab
-	  }
-        }
-        std::cout << std::endl; // Newline after each row
-    }
-    // std::cout << "//////////////////////////// Correlation matrix: ////////////////////////////"<< std::endl;
-    // Minuit.mnmatu(1); // Print covariance matrix and correlation coefficients
- 
-
     return Minuit.GetStatus();  // Return fit status
 }
 
@@ -259,7 +234,7 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     gHist->SetFillStyle(0);
     gHist->Draw();  // Draw after setting the title and axis label
     
-    fitFunc->SetLineColor(kRed);
+    fitFunc->SetLineColor(kOrange);
     fitFunc->SetLineWidth(3);
     fitFunc->SetNpx(1e5);
     fitFunc->Draw("same");
@@ -330,41 +305,91 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
     }
 }
 
+// TF1* CreateSineFunction(const double* params) {
+//     // Lambda function for ROOT's TF1
+//     auto sineFunction = [&](double* x, double* par) {
+//         return Sine(x[0], par);
+//     };
+
+//     // Define sine function in ROOT's TF1 class
+//     TF1* fitFunc = new TF1("fitFunc", sineFunction, gkxMin, gkxMax, 4); // 4 parameters
+//     // fitFunc->SetParameters(params); // Set parameters
+//     // fitFunc->SetNpx(1e5); // Set number of points for plotting
+//     return fitFunc;
+// }
+
 // Extract sine initial guesses  using ROOT's internal fitting
-void InitialGuess(double* params) {
-    TF1 *sineFit = new TF1("sineFit", "[0] / [1] * sin([1] * x + [2]) + [3]", 0, 50);
-    sineFit->SetParameters(5, 1, 0, 10);  // Initial guesses for amplitude, frequency, phase, offset
+void InitialGuess(double* params) { 
+    auto sineFunc = [&](double* x, double* par) {
+         return Sine(x[0], par);
+     };
     
-    gHist->Fit(sineFit, "NQ");  // Perform quiet fit
+    TF1 *sineFit = new TF1("sineFit", sineFunc, 0, 50, 3);
 
-    // Extract fitted parameters and their errors
-    for (int ii = 0; ii < 4; ii++) {
-        params[ii] = sineFit->GetParameter(ii);
-    }
-    params[4] = 1.0;  // Initial guess for sigma
+    int maxBin = gHist->GetMaximumBin();  // Bin with maximum content
+    int minBin = gHist->GetMinimumBin();  // Bin with minimum content
+    double amplitude = 0.5 * (gHist->GetBinContent(maxBin) - gHist->GetBinContent(minBin));
+    sineFit->SetParameters(amplitude, 1, 1);  // Initial guesses for amplitude, frequency, phase
+    
+    sineFit->SetParLimits(0, 0, 1e5);   // Amplitude
+    // sineFit->SetParLimits(1, 0, 10);    // Frequency
+    // sineFit->SetParLimits(2, -TMath::Pi(), TMath::Pi());  // Phase
+    // sineFit->SetParLimits(3, 0, 1e5);    // Offset
+    // sineFit->SetParLimits(4, 1e-6, 1e-5); // Sigma
+    // gHist->Fit(sineFit);
 
-    // Log the fit results and errors
-    std::cout << "Initial Fit Results:" << std::endl;
-    std::cout << "Amplitude: " << params[0] << " ± " << sineFit->GetParError(0) << std::endl;
-    std::cout << "Frequency: " << params[1] << " ± " << sineFit->GetParError(1) << std::endl;
-    std::cout << "Phase: " << params[2] << " ± " << sineFit->GetParError(2) << std::endl;
-    std::cout << "Offset: " << params[3] << " ± " << sineFit->GetParError(3) << std::endl;
+    // // Extract fitted parameters and their errors
+    // for (int ii = 0; ii < 3; ii++) {
+    //     params[ii+1] = sineFit->GetParameter(ii);
+    // }
+    params[0] = sineFit->GetParameter(0);
+    params[1] = 2;
+    params[2] = sineFit->GetParameter(1);
+    params[3] = sineFit->GetParameter(2);
+    params[4] = 1e-6;  // Initial guess for sigma
+
+    gHist->Fit(sineFit);
+
+    // // Log the fit results and errors
+    // std::cout << "Initial Fit Results:" << std::endl;
+    // std::cout << "Normalisation: " << params[0] << " ± " << sineFit->GetParError(3) << std::endl;
+    // std::cout << "Frequency: " << params[2] << " ± " << sineFit->GetParError(1) << std::endl;
+    // std::cout << "Phase: " << params[3] << " ± " << sineFit->GetParError(2) << std::endl;
 
     delete sineFit;
 }
 
-TF1* CreateSineFunction(const double* params) {
-    // Lambda function for ROOT's TF1
-    auto sineFunction = [&](double* x, double* par) {
-        return Sine(x[0], par);
-    };
 
-    // Define sine function in ROOT's TF1 class
-    TF1* fitFunc = new TF1("fitFunc", sineFunction, gkxMin, gkxMax, 4); // 4 parameters
-    fitFunc->SetParameters(params); // Set parameters
-    fitFunc->SetNpx(1e5); // Set number of points for plotting
-    return fitFunc;
-}
+// // Integrate the sine function over [gkxMin, gkxMax]
+// double IntegrateSineFunction(const double* params) {
+//     auto sineFunc = [&](double* x, double* par) {
+//         return Sine(x[0], par);
+//     };
+
+//     TF1 sineTF1("SineTF1", sineFunc, gkxMin, gkxMax, 4);
+//     sineTF1.SetParameters(params);
+
+//     double integral = sineTF1.Integral(gkxMin, gkxMax);
+//     std::cout << "Integral of Sine Function = " << integral << std::endl;
+
+//     return integral;
+// }
+
+// // Integrate the convoluted function over [gkxMin, gkxMax]
+// double IntegrateConvolutedFunction(const double* params) {
+//     auto convolutedFunc = [&](double* x, double* par) {
+//         return convolvedFunction(x[0], par);
+//     };
+
+//     TF1 convTF1("ConvolvedTF1", convolutedFunc, gkxMin, gkxMax, 5);
+//     convTF1.SetParameters(params);
+
+//     double integral = convTF1.Integral(gkxMin, gkxMax);
+//     std::cout << "Integral of Convoluted Function = " << integral << std::endl;
+
+//     return integral;
+// }
+
 
 int main() {
     // Redirect ROOT output to the log file
@@ -393,7 +418,7 @@ int main() {
     gHist = new TH1D("gHist", "Generated Noisy Sine Signal", 500, 0, 50);
 
     // Parameters for sine function and Gaussian noise
-    const double params[5] = {5, 1, 0, 10, 1}; // Amplitude, Frequency, Phase, Offset, Sigma
+    const double params[5] = {5, 2, 1, 1, 1}; // Normalisation, Amplitude, Frequency, Phase, Sigma
 
     // Perform smearing of the sine signal with Gaussian noise
     SmearSignal(gHist, params);
@@ -411,14 +436,14 @@ int main() {
    // // Create a canvas
    //  TCanvas *sineCanvas = new TCanvas("sineCanvas", "Sine Function Plot", 800, 600);
     
-   //  // Example parameters for the sine function
-   //  double params1[4] = {1.0, 2.0, 0.0, 15.0}; 
+   // // Example parameters for the sine function
+   //  double params1[4] = {5.0, 2.0, 1.0, 1.0}; 
 
    //  // Create the sine function using the wrapper
    //  TF1* fitFunc = CreateSineFunction(params1);
 
    //  // Draw the function
-   //  fitFunc->SetLineColor(kRed);
+   //  fitFunc->SetLineColor(kGreen);
    //  fitFunc->SetTitle("Sine Function");
    //  fitFunc->Draw();
 
@@ -426,6 +451,18 @@ int main() {
    //  sineCanvas->Update();  
    //  gSystem->Exec("mkdir -p outplot"); 
    //  sineCanvas->Print("outplot/SineValues.png"); 
+
+    // // Calculate the integrals
+    // IntegrateSineFunction(params);
+    // IntegrateConvolutedFunction(params);
+
+//     // Extract amplitude from histogram using GetMaximumBin
+// int maxBin = gHist->GetMaximumBin();  // Get the bin index with the maximum content
+// int minBin = gHist->GetMinimumBin();
+// double amplitude = 0.5 * (gHist->GetBinContent(maxBin) - gHist->GetBinContent(minBin)) ;  
+
+
+// std::cout << "Estimated Amplitude from Histogram: " << amplitude << std::endl;
 
 
     delete gHist;
