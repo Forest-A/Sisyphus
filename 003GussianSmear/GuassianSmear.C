@@ -20,6 +20,7 @@ TRandom3 gRand(123);
 TH1D *gHist = nullptr;
 TCanvas *gCanvas = nullptr;
 TList *plotList = nullptr;
+TMinuit *gMinuit;
 
 // Global constants for the integrator and axis limits
 const double gkxMax = 50.0;
@@ -179,7 +180,7 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
 
     Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 10 * params[0]);
     Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 10 * params[1]);  // Amplitude
-    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0.1, 10 * params[3]); // Frequency
+    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0.1, 10 * params[2]); // Frequency
     Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
     Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0.1, 10 * params[4]); // Sigma
 
@@ -300,15 +301,22 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
 
 // Extract sine initial guesses  using ROOT's internal fitting
 void InitialGuess(double* params) { 
-    auto sineFunc = [&](double* x, double* par) {
-         return Sine(x[0], par);
-     };
+     auto sineFunc = [&](double* x, double* par) {
+        return par[0] * Sine(x[0], par);  // Assuming Sine is already defined elsewhere
+    };
     
     TF1 *sineFit = new TF1("sineFit", sineFunc, 0, 50, 4);
     
-    sineFit->SetParameters(5e3, 2e3, 1, 1);  // Initial guesses for amplitude, frequency, phase
-    
-    gHist->Fit(sineFit);
+    // Initial guesses based on histogram data
+    double maxVal = gHist->GetMaximum();
+    sineFit->SetParameters(maxVal, 2, 3, 1);  // Guesses for amplitude, frequency, phase
+
+    // // Adjust and relax parameter limits
+    // sineFit->SetParLimits(0, 0.5 * maxVal, 2 * maxVal);  // Wider amplitude range
+    // sineFit->SetParLimits(1, 0, 100);  // Frequency
+    // sineFit->SetParLimits(2, -10, 10); // Phase
+
+    gHist->Fit(sineFit, "M");  // Minuit for better precision
 
     // // Extract fitted parameters and their errors
     // for (int ii = 0; ii < 3; ii++) {
@@ -361,7 +369,7 @@ int main() {
     // Perform smearing of the sine signal with Gaussian noise
     SmearSignal(gHist, params);
 
-    double guess[5] = {5e3, 2e3, 1, 1, 1};
+    double guess[5];
     double errors[5];
 
     InitialGuess(guess);
