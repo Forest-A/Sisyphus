@@ -1,352 +1,362 @@
-style::IniColorCB creating new color
-style::IniColorCB arleady set
-Minuit2Minimizer: Minimize with max-calls 1480 convergence for edm < 0.01 strategy 1
-Number of iterations 29
+Warning in <Minuit2>: MnPosDef non-positive diagonal element in covariance matrix[ 1 ] = -3.91846e-10
+Warning in <Minuit2>: MnPosDef Added to diagonal of Error matrix a value 0.5
+Warning in <Minuit2>: DavidonErrorUpdator delgam < 0 : fiNumber of iterations 28
 ----------> Iteration 0
-            FVAL = 71788335.2547 Edm = 189144805.499 Nfcn = 38
+            FVAL = 7.82309540305e+13 Edm = 1.56474307607e+14 Nfcn = 17
             Error matrix change = 1
-            Parameters :  p0 = 2240 p1 = 500 p2 = 0.001 p3 = 5.99391
+            Parameters :  p0 = 2240 p1 = 11200 p2 = 0.64 p3 = 0
 ----------> Iteration 1
-            FVAL = 963352.800984 Edm = 2.09259580738 Nfcn = 58
+            FVAL = 983157.999981 Edm = 6.41382973278e-06 Nfcn = 35
             Error matrix change = 0.5
-            Parameters :  p0 = 995.764 p1 = 79.2529 p2 = -4.48361e-06 p3 = 6.2809
+            Parameters :  p0 = 9.59277e-07 p1 = -0.000356967 p2 = 0.638937 p3 = 0
 ----------> Iteration 2
-            FVAL = 959225.822619 Edm = 3.89378124635 Nfcn = 75
-            Error matrix change = 0.250008
-            Parameters :  p0 = 1214.14 p1 = 79.1535 p2 = 1.92473e-05 p3 = 6.2809
+            FVAL = 983157.999981 Edm = 582.136103605 Nfcn = 58
+            Error matrix change = 0
+            Parameters :  p0 = 9.59277e-07 p1 = -0.000356967 p2 = 0.638937 p3 = 0
 ----------> Iteration 3
-            FVAL = 955873.41207 Edm = 21916.3305028 Nfcn = 87
-            Error matrix change = 0.12501
-            Parameters :  p0 = 1437.92 p1 = 79.0582 p2 = 4.12726e-05 p3 = 6.2809
+            FVAL = 983102.580446 Edm = 391.884594902 Nfcn = 72
+            Error matrix change = 0.406531
+            Parameters :  p0 = 2.91068 p1 = -1.62953 p2 = 0.639215 p3 = 3.46615e-06
 ----------> Iteration 4
-            FVAL = 953774.080707 Edm = 604.465881847 Nfcn = 101
-            Error matrix change = 0.0625059
-            Parameters :  p0 = 1688.72 p1 = 78.9413 p2 = 6.35864e-05 p3 = 6.2809
+            FVAL = 982783.265673 Edm = 1916.70073818 Nfcn = 94
+            Error matrix change = 0.333772
+            Parameters :  p0 = 20.274 p1 = 0.766495 p2 = 1.78097 p3 = 3.46407e-05
 ----------> Iteration 5
-            FVAL = 953450.256308 Edm = 134.858284059 Nfcn = 111
-            Error matrix change = 0.0312545
-            Parameters :  p0 = 1821.78 p1 = 78.8205 p2 = 7.37455e-05 p3 = 6.28091
+            FVAL = 982538.070091 Edm = 31355.3319531 Nfcn = 111
+            Error matrix change = 0.412547
+            Parameters :  p0 = 47.0681 p1 = 1.06819 p2 = 2.2197 p3 = 7.18507e-05
 ----------> Iteration 6
-            FVAL = 929473.853515 Edm = 17213.0067922 Nfcn = 131
-            Error matrix change = 0.0160738
-            Parameters :  p0 = 2934.53 p1 = 65.9432 p2 = -4.379e-05 p3 = 6.28091
+            FVAL = 982537.51162 Edm = 6093.86904105 Nfcn = 125
+            Error matrix change = 0.44081
+            Parameters :  p0 = 47.1239 p1 = 1.06969 p2 = 2.21329 p3 = 7.18298e-05
 ----------> Iteration 7
-            FVAL = 927277.967366 Edm = 5491.25358131 Nfcn = 148
-            Error matrix change = 0.00819192
-            Parameters :  p0 = 3430.06 p1 = 62.6061 p2 = -6.61033e-05 p3 = 6.28091
+            FVAL Warning in <Minuit2>: Minuit2Minimizer::Minimize Minimization did NOT converge, Edm is above max
+Warning in <Fit>: Abnormal termination of minimization.
+527 p3 = -0.00353129
 ----------> Iteration 8
-            FVAL = 896733.382931 Edm = 40423.8267136 Nfcn = 167
-            Error matrix change = 0.00439091
-            Parameters :  p0 = 4736.02 p1 = 63.1249 p2 = 3.40809e-05 p3 = 6.28092
+            FVAL = 980494.35707 Edm = 16307.3966349 Nfcn = 165
+            Error matrix change = 0.3472
+            Parameters :  p0 = 190.873 p1 = -0.493014 p2 = 2.20663 p3 = 1.9579
 ----------> Iteration 9
-            FVAL = 896135.368526 Edm = 133.236171323 Nfcn = 179
-            Error matrix change = 0.00219636
-            Parameters :  p0 = 4603.42 p1 = 63.0524 p2 = 2.41807e-05 p3 = 6.28092
+            FVAL = 975042.803685 Edm = 4220.41340479 Nfcn = 183
+            Error matrix change = 0.489041
+            Parameters :  p0 = 424.45 p1 = 0.124544 p2 = 2.17438 p3 = -0.946117
 ----------> Iteration 10
-            FVAL = 853882.315223 Edm = 138640.469922 Nfcn = 200
-            Error matrix change = 0.00113078
-            Parameters :  p0 = 9256.25 p1 = 67.5874 p2 = 4.5786e-05 p3 = 6.28093
+            FVAL = 974970.376109 Edm = 1746.10136688 Nfcn = 197
+            Error matrix change = 0.47427
+            Parameters :  p0 = 443.881 p1 = 0.162309 p2 = 2.17122 p3 = -2.01847
 ----------> Iteration 11
-            FVAL = 853621.727398 Edm = 163.508150683 Nfcn = 210
-            Error matrix change = 0.000586511
-            Parameters :  p0 = 8958.24 p1 = 67.3346 p2 = 4.45267e-05 p3 = 6.28093
+            FVAL = 974961.662118 Edm = 152.055133524 Nfcn = 219
+            Error matrix change = 1.68162
+            Parameters :  p0 = 458.177 p1 = 0.188248 p2 = 2.16888 p3 = -3.83851
 ----------> Iteration 12
-            FVAL = 535872.734238 Edm = 159834.796556 Nfcn = 233
-            Error matrix change = 0.000486898
-            Parameters :  p0 = 27227.2 p1 = 86.5452 p2 = -7.91403e-06 p3 = 6.28097
+            FVAL = 972769.854906 Edm = 11634.6774389 Nfcn = 238
+            Error matrix change = 1.22154
+            Parameters :  p0 = 775.839 p1 = 0.256139 p2 = 2.19255 p3 = -19.3809
 ----------> Iteration 13
-            FVAL = 535791.943389 Edm = 117.245915397 Nfcn = 243
-            Error matrix change = 0.000444551
-            Parameters :  p0 = 27372.2 p1 = 86.6717 p2 = -8.23906e-06 p3 = 6.28097
+            FVAL = 972599.310649 Edm = 295.485840017 Nfcn = 258
+            Error matrix change = 0.804761
+            Parameters :  p0 = 727.642 p1 = 0.24143 p2 = 2.1845 p3 = -16.7723
 ----------> Iteration 14
-            FVAL = 531022.628603 Edm = 5985.67748681 Nfcn = 259
-            Error matrix change = 0.000238562
-            Parameters :  p0 = 29412.7 p1 = 84.8304 p2 = -1.13069e-05 p3 = 6.28097
+            FVAL = 972585.461463 Edm = 294.151673371 Nfcn = 275
+            Error matrix change = 3.10001
+            Parameters :  p0 = 725.029 p1 = 0.24063 p2 = 2.18398 p3 = -16.5943
 ----------> Iteration 15
-            FVAL = 530289.78944 Edm = 648.873904037 Nfcn = 270
-            Error matrix change = 0.000141294
-            Parameters :  p0 = 28767 p1 = 85.1067 p2 = -1.02325e-05 p3 = 6.28097
+            FVAL = 970244.228021 Edm = 540.079864043 Nfcn = 295
+            Error matrix change = 1.67235
+            Parameters :  p0 = 659.683 p1 = 0.0649223 p2 = 2.35681 p3 = -13.3465
 ----------> Iteration 16
-            FVAL = 390119.016996 Edm = 29958.5499543 Nfcn = 291
-            Error matrix change = 0.00428882
-            Parameters :  p0 = 36534.1 p1 = 34.1565 p2 = 6.71831e-07 p3 = 6.28099
+            FVAL = 961176.264839 Edm = 13753.630718 Nfcn = 320
+            Error matrix change = 1.28423
+            Parameters :  p0 = 1275.43 p1 = -0.127634 p2 = 1.85931 p3 = -28.3102
 ----------> Iteration 17
-            FVAL = 55700.1604856 Edm = 10366.6760528 Nfcn = 311
-            Error matrix change = 0.00323097
-            Parameters :  p0 = 81065.6 p1 = 16.6824 p2 = 1.15132e-05 p3 = 6.28105
+            FVAL = 956443.557032 Edm = 62936.6520054 Nfcn = 338
+            Error matrix change = 0.830561
+            Parameters :  p0 = 2030.69 p1 = -0.161272 p2 = 1.07635 p3 = -49.3043
 ----------> Iteration 18
-            FVAL = 42987.247073 Edm = 32819.4910659 Nfcn = 328
-            Error matrix change = 0.00579722
-            Parameters :  p0 = 80171.5 p1 = 8.33509 p2 = 4.18762e-06 p3 = 6.28105
+            FVAL = 956083.185338 Edm = 6565.06676997 Nfcn = 355
+            Error matrix change = 0.799512
+            Parameters :  p0 = 1830.9 p1 = -0.147533 p2 = 1.28264 p3 = -43.7549
 ----------> Iteration 19
-            FVAL = 17076.3296102 Edm = 481.863737576 Nfcn = 341
-            Error matrix change = 0.0033069
-            Parameters :  p0 = 92134.3 p1 = 12.8936 p2 = -3.54981e-06 p3 = 6.28106
+            FVAL = 945847.622127 Edm = 2889.6844195 Nfcn = 374
+            Error matrix change = 0.438616
+            Parameters :  p0 = 1888.53 p1 = 0.0143573 p2 = 0.443558 p3 = -58.9481
 ----------> Iteration 20
-            FVAL = 15726.2347469 Edm = 1733.5987044 Nfcn = 353
-            Error matrix change = 0.00393284
-            Parameters :  p0 = 95670.2 p1 = 16.9956 p2 = -3.31738e-06 p3 = 6.28106
+            FVAL = 866709.443621 Edm = 659198.470286 Nfcn = 402
+            Error matrix change = 0.832021
+            Parameters :  p0 = 7140.42 p1 = -0.0571806 p2 = -3.48002 p3 = -177.557
 ----------> Iteration 21
-            FVAL = 12682.9695964 Edm = 133.602801664 Nfcn = 374
-            Error matrix change = 0.00758753
-            Parameters :  p0 = 97357.1 p1 = 23.1061 p2 = -3.71682e-08 p3 = 6.28107
+            FVAL = 845603.241224 Edm = 59100939.759 Nfcn = 424
+            Error matrix change = 0.67443
+            Parameters :  p0 = 7140.42 p1 = -0.000108244 p2 = -3.48585 p3 = -177.557
 ----------> Iteration 22
-            FVAL = 12665.3184438 Edm = 771.421083886 Nfcn = 390
-            Error matrix change = 0.0100976
-            Parameters :  p0 = 97372.9 p1 = 23.1737 p2 = -2.17994e-09 p3 = 6.28107
+            FVAL = 845602.985263 Edm = 33277.1665446 Nfcn = 442
+            Error matrix change = 0.872044
+            Parameters :  p0 = 7140.42 p1 = 0.000321091 p2 = -3.48166 p3 = -177.557
 ----------> Iteration 23
-            FVAL = 12664.7383672 Edm = 255.570988397 Nfcn = 407
-            Error matrix change = 0.0062182
-            Parameters :  p0 = 97372.5 p1 = 23.1776 p2 = 1.14151e-09 p3 = 6.28107
+            FVAL = 817723.442715 Edm = 356390225.778 Nfcn = 469
+            Error matrix change = 8.23749
+            Parameters :  p0 = 9601.38 p1 = 0.0379801 p2 = 4.74862 p3 = -624.275
 ----------> Iteration 24
-            FVAL = 12653.8642207 Edm = 0.416881975321 Nfcn = 421
-            Error matrix change = 0.00353814
-            Parameters :  p0 = 97059.2 p1 = 22.7603 p2 = -7.71533e-10 p3 = 6.28107
+            FVAL = 805357.313756 Edm = 469754494386 Nfcn = 488
+            Error matrix change = 4.34531
+            Parameters :  p0 = 9601.38 p1 = -0.0198384 p2 = 4.75724 p3 = -624.275
 ----------> Iteration 25
-            FVAL = 12653.4620394 Edm = 0.00294074610244 Nfcn = 437
-            Error matrix change = 0.00187891
-            Parameters :  p0 = 97049.8 p1 = 22.7489 p2 = -1.62737e-12 p3 = 6.28107
+            FVAL = 800629.038023 Edm = 2533.09199257 Nfcn = 507
+            Error matrix change = 2.58981
+            Parameters :  p0 = 9601.38 p1 = 3.75256e-05 p2 = 5.10687 p3 = -624.278
 ----------> Iteration 26
-            FVAL = 12653.4612476 Edm = 6.63437475281e-05 Nfcn = 453
-            Error matrix change = 0.000939593
-            Parameters :  p0 = 97049.8 p1 = 22.7489 p2 = 8.17615e-14 p3 = 6.28107
+            FVAL = 751513.562051 Edm = 10381990.4514 Nfcn = 535
+            Error matrix change = 1.5514
+            Parameters :  p0 = 14172 p1 = -0.035023 p2 = 52.9958 p3 = 6163.94
 ----------> Iteration 27
-            FVAL = 12653.4612012 Edm = 5.53108488399e-07 Nfcn = 462
-            Error matrix change = 0.000520263
-            Parameters :  p0 = 97050.5 p1 = 22.7498 p2 = -7.77495e-14 p3 = 6.28107
-----------> Iteration 28
-            FVAL = 12653.4612012 Edm = 5.53108488399e-07 Nfcn = 462
-            Error matrix change = 0.000520263
-            Parameters :  p0 = 97050.5 p1 = 22.7498 p2 = -7.77495e-14 p3 = 6.28107
-Minuit2Minimizer : Valid minimum - status = 0
-FVAL  = 12653.4612012079706
-Edm   = 5.53108488399210045e-07
-Nfcn  = 462
-p0	  = 97050.5	 +/-  99.6932	(limited)
-p1	  = 22.7498	 +/-  0.132976	(limited)
-p2	  = -7.77495e-14	 +/-  2.54996e-10
-p3	  = 6.28107	 +/-  0.00146707	(limited)
-
-Covariance Matrix:
-
-            	          p0          p1          p2          p3
-p0          	      9938.7      13.109  2.8929e-09  9.5942e-06
-p1          	      13.109    0.017683  3.9013e-12  1.2667e-08
-p2          	  2.8929e-09  3.9013e-12  6.5023e-20   2.915e-18
-p3          	  9.5942e-06  1.2667e-08   2.915e-18  2.1524e-06
-
-Correlation Matrix:
-
-            	          p0          p1          p2          p3
-p0          	           1     0.98887      0.1138  6.5596e-05
-p1          	     0.98887           1     0.11505   6.493e-05
-p2          	      0.1138     0.11505           1  7.7918e-06
-p3          	  6.5596e-05   6.493e-05  7.7918e-06           1
+            FVAL = 751513.562051 Edm = 10381990.4514 Nfcn = 535
+            Error matrix change = 1.5514
+            Parameters :  p0 = 14172 p1 = -0.035023 p2 = 52.9958 p3 = 6163.94
+Minuit2Minimizer : Invalid minimum - status = 3
+FVAL  = 751514
+Edm   = 1.0382e+07
+Nfcn  = 535
+****************************************
+         Invalid FitResult  (status = 3 )
 ****************************************
 Minimizer is Minuit2 / Migrad
-Chi2                      =      12653.5
+Chi2                      =       751514
 NDf                       =          496
-Edm                       =  5.53108e-07
-NCalls                    =          462
-p0                        =      97050.5   +/-   99.6932      	 (limited)
-p1                        =      22.7498   +/-   0.132976     	 (limited)
-p2                        = -7.77495e-14   +/-   2.54996e-10 
-p3                        =      6.28107   +/-   0.00146707   	 (limited)
+Edm                       =   1.0382e+07
+NCalls                    =          535
+p0                        =        14172   +/-   1.85463     
+p1                        =    -0.035023   +/-   0.00025591  
+p2                        =      52.9958   +/-   0.0174264   
+p3                        =      6163.94   +/-   2.46143     
 Initial Fit Results:
-Normalisation: 97050.5 ± 99.6932
-Amplitude: 22.7498 ± 0.132976
-Frequency: -7.77495e-14 ± 2.54996e-10
-Phase: 6.28107 ± 0.00146707
+Normalisation: 14172 ± 1.85463
+Amplitude: -0.035023 ± 0.00025591
+Frequency: 52.9958 ± 0.0174264
+Phase: 6163.94 ± 2.46143
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
-     1 Normalisation   9.70505e+04  9.70505e+03    0.00000e+00  9.70505e+05
-     2 Amplitude    2.27498e+01  2.27498e+00    0.00000e+00  2.27498e+02
-     3 Frequency   -7.77495e-14  constant
-     4 Phase        6.28107e+00  1.00000e-01   -3.14159e+00  3.14159e+00
- MINUIT WARNING IN PARAM DEF
- ============== STARTING VALUE OUTSIDE LIMITS.
- MINUIT WARNING IN PARAMETR
- ============== VARIABLE4 BROUGHT BACK INSIDE LIMITS.
- MINUIT WARNING IN PARAMETR
- ============== VARIABLE4 BROUGHT BACK INSIDE LIMITS.
-     5 Sigma        1.00000e-06  1.00000e-07    0.00000e+00  1.00000e-05
- **********
- **    1 **MIGRAD
- **********
- FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
- MINUIT WARNING IN MIGrad    
- ============== VARIABLE4 BROUGHT BACK INSIDE LIMITS.
- START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
- FCN=12653.5 FROM MIGRAD    STATUS=INITIATE       37 CALLS          38 TOTAL
-                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
-  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.70505e+03   0.00000e+00  -3.25203e+00
-   2  Amplitude    2.27498e+01   2.27498e+00   0.00000e+00   1.18596e-04
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.13370e+00   1.00000e-01  -6.89458e-02  -3.09228e-11
-   5  Sigma        1.00000e-06   1.00000e-07   0.00000e+00   3.75432e-05
- MIGRAD FAILS TO FIND IMPROVEMENT
- MINUIT WARNING IN HESSE
- ============== Second derivative enters zero, param 4
- MINUIT WARNING IN HESSE
- ============== Second derivative zero for parameter4
-  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
- FCN=12653.5 FROM HESSE     STATUS=FAILED          7 CALLS          79 TOTAL
-                     EDM=0.00175726    STRATEGY= 1  ERROR MATRIX UNCERTAINTY 100.0 per cent
-  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.85142e+01   1.85854e-05   9.66609e-01
-   2  Amplitude    6.11624e+00   2.04945e+02   5.00000e-01  -6.16605e-05
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.13687e+00   1.00074e+00  -0.00000e+00  -3.63798e-12
-   5  Sigma        7.58828e-07   6.41173e-06  -0.00000e+00  -3.49821e-03
- MIGRAD FAILS TO FIND IMPROVEMENT
- MIGRAD MINIMIZATION HAS CONVERGED.
- MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
- COVARIANCE MATRIX CALCULATED SUCCESSFULLY
- MIGRAD TERMINATED WITHOUT CONVERGENCE.
- FCN=12653.5 FROM MIGRAD    STATUS=FAILED        125 CALLS         126 TOTAL
-                     EDM=0.000375212    STRATEGY= 1      ERR MATRIX APPROXIMATE
-  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.85142e+01   1.85854e-05   6.21776e-01
-   2  Amplitude    2.55244e+00   2.02595e+02   5.00000e-01  -4.18054e-05
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.13687e+00   6.23462e+00   5.00000e-02   3.63798e-10
-   5  Sigma        1.00152e-06   5.48818e-06   5.00000e-01  -4.25564e-04
- EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  4    ERR DEF=1
-  9.705e+03 -1.155e+01  1.801e+01 -1.544e-06 
- -1.155e+01  6.034e+06 -2.167e+03 -2.039e-08 
-  1.801e+01 -2.167e+03  1.357e+07 -6.961e-05 
- -1.544e-06 -2.039e-08 -6.961e-05  3.643e-08 
-ERR MATRIX APPROXIMATE
- PARAMETER  CORRELATION COEFFICIENTS  
-       NO.  GLOBAL      1      2      4      5
-        1  0.00011   1.000 -0.000  0.000 -0.000
-        2  0.00024  -0.000  1.000 -0.000 -0.000
-        4  0.00026   0.000 -0.000  1.000 -0.000
-        5  0.00013  -0.000 -0.000 -0.000  1.000
- ERR MATRIX APPROXIMATE
-////////////////////////////Iteration 1: Chi2 = 12653.5///////////////////////////
-Iteration 1 took: 0.617975seconds (real time), 0.57 seconds (CPU time).
-//////////////////////////////////////////////////////////////////////////////////
- PARAMETER DEFINITIONS:
-    NO.   NAME         VALUE      STEP SIZE      LIMITS
-     1 Normalisation   9.70505e+04  9.70505e+03    0.00000e+00  9.70505e+05
-     2 Amplitude    2.55244e+00  2.55244e-01    0.00000e+00  2.55244e+01
-     3 Frequency   -7.77495e-14  constant
-     4 Phase        3.13687e+00  1.00000e-01   -3.14159e+00  3.14159e+00
- MINUIT WARNING IN PARAMETR
- ============== VARIABLE4 BROUGHT BACK INSIDE LIMITS.
-     5 Sigma        1.00152e-06  1.00152e-07    0.00000e+00  1.00152e-05
+     1 Normalisation   1.41720e+04  1.41720e+03     no limits
+     2 Amplitude   -3.50230e-02  constant
+     3 Frequency    5.29958e+01  5.29958e+00     no limits
+     4 Phase        6.16394e+03  1.00000e-01     no limits
+     5 Sigma        1.00000e-06  1.00000e-07     no limits
  **********
  **    1 **MIGRAD
  **********
  FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
  START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
- FCN=12653.5 FROM MIGRAD    STATUS=INITIATE       37 CALLS          38 TOTAL
+ FCN=751120 FROM MIGRAD    STATUS=INITIATE       47 CALLS          48 TOTAL
                      EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
   EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.70505e+03   0.00000e+00   6.25640e-01
-   2  Amplitude    2.55244e+00   2.55244e-01   0.00000e+00   1.33071e-05
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.14143e+00   1.00000e-01   6.50594e-02  -9.09495e-12
-   5  Sigma        1.00152e-06   1.00152e-07   0.00000e+00  -4.73194e-05
+   1  Normalisation   1.41720e+04   1.41720e+03   0.00000e+00  -1.26302e+01
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29733e+01   5.29958e+00  -2.24326e-02  -1.38198e+06
+   4  Phase        6.16394e+03   1.00000e-01   0.00000e+00  -1.19303e+04
+   5  Sigma        1.00000e-06   1.00000e-07   0.00000e+00  -6.73489e+10
  MIGRAD FAILS TO FIND IMPROVEMENT
  COVARIANCE MATRIX CALCULATED SUCCESSFULLY
- FCN=12653.5 FROM HESSE     STATUS=OK             25 CALLS          69 TOTAL
-                     EDM=7.9041e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+ FCN=599894 FROM HESSE     STATUS=OK             29 CALLS         120 TOTAL
+                     EDM=13.6673    STRATEGY= 1      ERROR MATRIX ACCURATE 
   EXT PARAMETER                                   STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.85143e+01   1.85854e-05   6.21779e-01
-   2  Amplitude    2.55244e+00   1.81625e+01   1.83308e-01   1.33789e-05
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.14143e+00   3.15349e+00   5.00000e-01   9.09495e-12
-   5  Sigma        1.00152e-06   5.50594e-06   1.52722e-01  -1.31068e-04
- MIGRAD MINIMIZATION HAS CONVERGED.
- FCN=12653.5 FROM MIGRAD    STATUS=CONVERGED      86 CALLS          87 TOTAL
-                     EDM=5.17987e-06    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   0.0 per cent
-  EXT PARAMETER                                   STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.85143e+01  -4.58793e-15   6.26640e-01
-   2  Amplitude    2.55244e+00   1.60105e+01  -9.74549e-08   1.30841e-05
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.14143e+00   3.15094e+00  -1.20560e-07   1.81899e-12
-   5  Sigma        1.00152e-06   5.17479e-06   5.66262e-09  -4.63452e-05
- EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  4    ERR DEF=1
-  9.705e+03 -7.065e+01  5.796e+02 -5.838e-06 
- -7.065e+01  6.577e+06  3.125e+04  8.979e-03 
-  5.796e+02  3.125e+04  2.374e+07  2.326e-04 
- -5.838e-06  8.979e-03  2.326e-04  1.226e-11 
- PARAMETER  CORRELATION COEFFICIENTS  
-       NO.  GLOBAL      1      2      4      5
-        1  0.85253   1.000 -0.000  0.001 -0.017
-        2  0.99995  -0.000  1.000  0.003  1.000
-        4  0.73750   0.001  0.003  1.000  0.014
-        5  0.99995  -0.017  1.000  0.014  1.000
-////////////////////////////Iteration 2: Chi2 = 12653.5///////////////////////////
-Iteration 2 took: 0.323304seconds (real time), 0.32 seconds (CPU time).
-//////////////////////////////////////////////////////////////////////////////////
- PARAMETER DEFINITIONS:
-    NO.   NAME         VALUE      STEP SIZE      LIMITS
-     1 Normalisation   9.70505e+04  9.70505e+03    0.00000e+00  9.70505e+05
-     2 Amplitude    2.55244e+00  2.55244e-01    0.00000e+00  2.55244e+01
-     3 Frequency   -7.77495e-14  constant
-     4 Phase        3.14143e+00  1.00000e-01   -3.14159e+00  3.14159e+00
- MINUIT WARNING IN PARAMETR
- ============== VARIABLE4 BROUGHT BACK INSIDE LIMITS.
-     5 Sigma        1.00152e-06  1.00152e-07    0.00000e+00  1.00152e-05
- **********
- **    1 **MIGRAD
- **********
- FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
- START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
- FCN=12653.5 FROM MIGRAD    STATUS=INITIATE       18 CALLS          19 TOTAL
-                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
-  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.70505e+03   3.33726e-02   6.26640e-01
-   2  Amplitude    2.55244e+00   2.55244e-01   3.33726e-02   1.33811e-05
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.14143e+00   1.00000e-01   1.25622e-01  -6.59041e-11
-   5  Sigma        1.00152e-06   1.00152e-07   3.33726e-02   6.93831e-04
- MIGRAD FAILS TO FIND IMPROVEMENT
- COVARIANCE MATRIX CALCULATED SUCCESSFULLY
- FCN=12653.5 FROM HESSE     STATUS=OK             27 CALLS          52 TOTAL
-                     EDM=0.000137993    STRATEGY= 1      ERROR MATRIX ACCURATE 
-  EXT PARAMETER                                   STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.85143e+01   1.85854e-05   6.22778e-01
-   2  Amplitude    2.55244e+00   1.34569e+01   1.83308e-02   1.33818e-05
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.14143e+00   3.54389e+00   5.00000e-01  -3.63798e-11
-   5  Sigma        1.00152e-06   8.20501e-06   1.75194e-02  -8.50580e-03
+   1  Normalisation   3.79840e+04   6.23317e+01   2.32634e+01  -1.18183e-01
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29733e+01   1.45659e-05   2.52596e-05   2.58487e+04
+   4  Phase        6.16393e+03   1.72694e-03   2.93919e-03   2.04624e+02
+   5  Sigma        3.11702e-06   4.84898e-09   4.23291e-06   3.44970e+03
  MIGRAD FAILS TO FIND IMPROVEMENT
  MACHINE ACCURACY LIMITS FURTHER IMPROVEMENT.
  MIGRAD MINIMIZATION HAS CONVERGED.
- FCN=12653.5 FROM MIGRAD    STATUS=CONVERGED      60 CALLS          61 TOTAL
-                     EDM=0.000137993    STRATEGY= 1      ERROR MATRIX ACCURATE 
+ FCN=599880 FROM MIGRAD    STATUS=CONVERGED     144 CALLS         145 TOTAL
+                     EDM=0.00121699    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   0.1 per cent
   EXT PARAMETER                                   STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  Normalisation   9.70505e+04   9.85143e+01  -0.00000e+00   6.22778e-01
-   2  Amplitude    2.55244e+00   1.34569e+01  -0.00000e+00   1.33818e-05
-   3  Frequency   -7.77495e-14   constant   
-   4  Phase        3.14143e+00   3.54389e+00  -0.00000e+00  -3.63798e-11
-   5  Sigma        1.00152e-06   8.20501e-06   0.00000e+00  -8.50580e-03
+   1  Normalisation   3.82141e+04   6.23769e+01  -0.00000e+00  -2.89979e-06
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29733e+01   1.44033e-05   0.00000e+00  -9.45153e+03
+   4  Phase        6.16393e+03   1.74302e-03   0.00000e+00  -8.38006e+01
+   5  Sigma        3.11702e-06   4.84898e-09   0.00000e+00  -4.14784e+03
  EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  4    ERR DEF=1
-  9.705e+03 -6.509e+01  4.489e+02 -6.652e-08 
- -6.509e+01  6.544e+06  2.680e+05  8.521e-07 
-  4.489e+02  2.680e+05  2.036e+07  1.598e-05 
- -6.652e-08  8.521e-07  1.598e-05  6.637e-11 
+  3.891e+03 -2.397e-05 -4.305e-03 -3.217e-12 
+ -2.397e-05  2.075e-10 -2.224e-08  2.078e-18 
+ -4.305e-03 -2.224e-08  3.038e-06  3.351e-16 
+ -3.217e-12  2.078e-18  3.351e-16  2.351e-17 
  PARAMETER  CORRELATION COEFFICIENTS  
-       NO.  GLOBAL      1      2      4      5
-        1  0.00105   1.000 -0.000  0.001 -0.000
-        2  0.02322  -0.000  1.000  0.023  0.000
-        4  0.02325   0.001  0.023  1.000  0.000
-        5  0.00044  -0.000  0.000  0.000  1.000
-////////////////////////////Iteration 3: Chi2 = 12653.5///////////////////////////
-Iteration 3 took: 0.296632seconds (real time), 0.29 seconds (CPU time).
+       NO.  GLOBAL      1      3      4      5
+        1  0.13877   1.000 -0.027 -0.040 -0.000
+        3  0.88783  -0.027  1.000 -0.886  0.000
+        4  0.88793  -0.040 -0.886  1.000  0.000
+        5  0.00015  -0.000  0.000  0.000  1.000
+////////////////////////////Iteration 1: Chi2 = 599880///////////////////////////
+Iteration 1 took: 0.733752seconds (real time), 0.72 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
-Converged after 3 iterations.
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Normalisation   3.82141e+04  3.82141e+03     no limits
+     2 Amplitude   -3.50230e-02  constant
+     3 Frequency    5.29733e+01  5.29733e+00     no limits
+     4 Phase        6.16393e+03  1.00000e-01     no limits
+     5 Sigma        3.11702e-06  3.11702e-07     no limits
+ **********
+ **    1 **MIGRAD
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ FCN=370594 FROM MIGRAD    STATUS=INITIATE       84 CALLS          85 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Normalisation   3.82141e+04   3.82141e+03   0.00000e+00  -1.20463e+01
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29729e+01   5.29733e+00  -3.38106e-04   1.03545e+05
+   4  Phase        6.16393e+03   1.00000e-01   0.00000e+00   8.82300e+02
+   5  Sigma        4.16004e-02   3.11702e-07   0.00000e+00  -4.26159e+05
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ FCN=12601.2 FROM MIGRAD    STATUS=CONVERGED     172 CALLS         173 TOTAL
+                     EDM=3.37564e-06    STRATEGY= 1  ERROR MATRIX UNCERTAINTY   2.4 per cent
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Normalisation   9.69334e+04   9.60725e+01   1.48713e-01   1.64964e-05
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29729e+01   1.02057e-05  -3.89692e-08  -2.41156e+02
+   4  Phase        6.16393e+03   1.99540e-03  -1.02435e-05   9.19317e-01
+   5  Sigma        6.04505e-02   7.92352e-04   1.98602e-07   2.15801e+00
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  4    ERR DEF=1
+  9.230e+03  2.645e-05 -9.532e-03 -3.858e-03 
+  2.645e-05  1.042e-10  6.035e-09 -2.757e-10 
+ -9.532e-03  6.035e-09  3.982e-06  5.359e-09 
+ -3.858e-03 -2.757e-10  5.359e-09  6.278e-07 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      3      4      5
+        1  0.08231   1.000  0.027 -0.050 -0.051
+        3  0.30109   0.027  1.000  0.296 -0.034
+        4  0.30210  -0.050  0.296  1.000  0.003
+        5  0.06135  -0.051 -0.034  0.003  1.000
+////////////////////////////Iteration 2: Chi2 = 12601.2///////////////////////////
+Iteration 2 took: 1.5926seconds (real time), 1.58 seconds (CPU time).
+//////////////////////////////////////////////////////////////////////////////////
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Normalisation   9.69334e+04  9.69334e+03     no limits
+     2 Amplitude   -3.50230e-02  constant
+     3 Frequency    5.29729e+01  5.29729e+00     no limits
+     4 Phase        6.16393e+03  1.00000e-01     no limits
+     5 Sigma        6.04505e-02  6.04505e-03     no limits
+ **********
+ **    1 **MIGRAD
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ FCN=12601.2 FROM MIGRAD    STATUS=INITIATE       18 CALLS          19 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Normalisation   9.69334e+04   9.69334e+03   9.69334e+03   1.64964e-05
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29729e+01   5.29729e+00   5.29729e+00  -2.16930e+02
+   4  Phase        6.16393e+03   1.00000e-01   1.00000e-01   9.19317e-01
+   5  Sigma        6.04505e-02   6.04505e-03   6.04505e-03   2.15931e+00
+ MIGRAD FAILS TO FIND IMPROVEMENT
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -6.6135e-02  9.9772e-01  1.0582e+00  2.0102e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.068145 TO DIAGONAL.
+ FCN=12601.2 FROM HESSE     STATUS=NOT POSDEF     29 CALLS          50 TOTAL
+                     EDM=0.627788    STRATEGY= 1      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Normalisation   9.69334e+04   1.47672e+02   2.72538e+01   1.64964e-05
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29729e+01   7.48263e-03   2.90366e-03  -2.19609e+02
+   4  Phase        6.16393e+03   3.75970e-02   2.93919e-03   1.11618e+00
+   5  Sigma        6.04505e-02   5.70837e-03   4.46510e-05   2.62879e+00
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=12599.9 FROM MIGRAD    STATUS=CONVERGED     150 CALLS         151 TOTAL
+                     EDM=1.95834e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Normalisation   9.69393e+04   9.84036e+01   5.39259e+00   1.58884e-05
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29801e+01   1.36348e-04   2.52629e-05   5.33402e+01
+   4  Phase        6.16309e+03   1.59444e-02   2.93879e-03   4.54749e-01
+   5  Sigma        6.03751e-02   8.08579e-04   4.42504e-05   2.96051e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  4    ERR DEF=1
+  9.683e+03  1.319e-05 -3.668e-03 -5.012e-04 
+  1.319e-05  1.859e-08 -2.145e-06  9.760e-10 
+ -3.668e-03 -2.145e-06  2.542e-04  5.196e-08 
+ -5.012e-04  9.760e-10  5.196e-08  6.538e-07 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      3      4      5
+        1  0.01019   1.000  0.001 -0.002 -0.006
+        3  0.98676   0.001  1.000 -0.987  0.009
+        4  0.98676  -0.002 -0.987  1.000  0.004
+        5  0.07917  -0.006  0.009  0.004  1.000
+////////////////////////////Iteration 3: Chi2 = 12599.9///////////////////////////
+Iteration 3 took: 1.65806seconds (real time), 1.65 seconds (CPU time).
+//////////////////////////////////////////////////////////////////////////////////
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Normalisation   9.69393e+04  9.69393e+03     no limits
+     2 Amplitude   -3.50230e-02  constant
+     3 Frequency    5.29801e+01  5.29801e+00     no limits
+     4 Phase        6.16309e+03  1.00000e-01     no limits
+     5 Sigma        6.03751e-02  6.03751e-03     no limits
+ **********
+ **    1 **MIGRAD
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ FCN=12599.9 FROM MIGRAD    STATUS=INITIATE       18 CALLS          19 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Normalisation   9.69393e+04   9.69393e+03   9.69393e+03   1.58884e-05
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29801e+01   5.29801e+00   5.29801e+00   3.21681e+01
+   4  Phase        6.16309e+03   1.00000e-01   1.00000e-01   1.49873e-01
+   5  Sigma        6.03751e-02   6.03751e-03   6.03751e-03  -1.88232e-01
+ MIGRAD FAILS TO FIND IMPROVEMENT
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -6.2190e-02  9.9736e-01  1.0580e+00  2.0069e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.064197 TO DIAGONAL.
+ FCN=12599.9 FROM HESSE     STATUS=NOT POSDEF     29 CALLS          49 TOTAL
+                     EDM=0.0185797    STRATEGY= 1      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Normalisation   9.69393e+04   1.44119e+02   2.72528e+01   1.58884e-05
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29801e+01   7.40053e-03   2.90391e-03   3.41153e+01
+   4  Phase        6.16309e+03   3.70795e-02   2.93879e-03   4.54749e-01
+   5  Sigma        6.03751e-02   5.74282e-03   4.41496e-05   2.80752e-01
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=12599.9 FROM MIGRAD    STATUS=CONVERGED     100 CALLS         101 TOTAL
+                     EDM=2.70468e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Normalisation   9.69392e+04   9.84036e+01   5.39258e+00   9.88050e-07
+   2  Amplitude   -3.50230e-02   constant   
+   3  Frequency    5.29801e+01   1.36369e-04   2.52629e-05   3.25615e+01
+   4  Phase        6.16309e+03   1.59469e-02   2.93879e-03   2.77364e-01
+   5  Sigma        6.03751e-02   8.08547e-04   4.41789e-05   6.80569e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  4    ERR DEF=1
+  9.683e+03  1.319e-05 -3.669e-03 -5.011e-04 
+  1.319e-05  1.860e-08 -2.146e-06  9.758e-10 
+ -3.669e-03 -2.146e-06  2.543e-04  5.191e-08 
+ -5.011e-04  9.758e-10  5.191e-08  6.537e-07 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      3      4      5
+        1  0.01019   1.000  0.001 -0.002 -0.006
+        3  0.98677   0.001  1.000 -0.987  0.009
+        4  0.98677  -0.002 -0.987  1.000  0.004
+        5  0.07913  -0.006  0.009  0.004  1.000
+////////////////////////////Iteration 4: Chi2 = 12599.9///////////////////////////
+Iteration 4 took: 1.35658seconds (real time), 1.36 seconds (CPU time).
+//////////////////////////////////////////////////////////////////////////////////
+Converged after 4 iterations.

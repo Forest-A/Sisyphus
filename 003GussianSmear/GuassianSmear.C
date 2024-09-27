@@ -12,6 +12,7 @@
 #include <Math/Integrator.h>
 #include <Math/IntegratorOptions.h>
 #include <TStopwatch.h>
+#include <TVirtualFFT.h>
 
 #include "style.h"
 
@@ -187,17 +188,23 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     TMinuit Minuit(5);
     Minuit.SetFCN(fcn);
 
-    Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 10 * params[0]);
-    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 10 * params[1]);  // Amplitude
-    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 10 * params[2]); // Frequency
-    Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
-    Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 10 * params[4]); // Sigma
+    // Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 10 * params[0]);
+    // Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 10 * params[1]);  // Amplitude
+    // Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 10 * params[2]); // Frequency
+    // Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
+    // Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 10 * params[4]); // Sigma
 
     // Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 0);
     // Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 0);  //Amplitude
     // Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 0); //Frequency
     // Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); //Phase
     // Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 0); //Sigma
+
+    Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 0);
+    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 0);  // Amplitude
+    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 0); // Frequency
+    Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); // Phase
+    Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 0); // Sigma
 
 
     Minuit.Migrad();  // Perform the minimization
@@ -315,6 +322,102 @@ void IterativeFit(double* const params, double* const errors, const int maxItera
 }
 
 
+//Extract data from the histogram directly with FFT
+double FFT(TH1D *const hist) {
+    if (!hist) {
+        std::cerr << "Error: Histogram not properly initialized!" << std::endl;
+        return 1;
+    }
+
+     // Number of bins in the histogram
+    const Int_t nBins = hist->GetNbinsX();
+    const Int_t n_size = nBins;
+
+    // Create an array to hold the size for TVirtualFFT
+    Int_t fftSize = n_size;
+    Int_t* sizeArray = &fftSize;
+
+    // Create a TVirtualFFT object for real-to-complex FFT
+    TVirtualFFT *fft = TVirtualFFT::FFT(1, sizeArray, "R2C ES K");
+    if (!fft) {
+        std::cerr << "Error: FFT object creation failed!" << std::endl;
+        return 1;
+    }
+
+    // Create an array to hold the histogram data
+    Double_t *in = new Double_t[n_size];
+    for (int ii = 0; ii < n_size; ii++) {
+        in[ii] = hist->GetBinContent(ii + 1);
+    }
+
+    // Perform transform
+    fft->SetPoints(in);
+    fft->Transform();
+
+    // Allocate arrays for real and imaginary parts
+    Double_t *real = new Double_t[n_size];
+    Double_t *imaginary = new Double_t[n_size];
+    fft->GetPointsComplex(real, imaginary);
+
+    // Compute the magnitude
+    std::vector<double> magnitudes(n_size / 2);
+    for (int ii = 0; ii < n_size / 2; ii++) {
+        magnitudes[ii] = TMath::Sqrt(real[ii] * real[ii] + imaginary[ii] * imaginary[ii]);
+    }
+
+    // Find the bin with the highest magnitude using a loop
+    int maxBin = 1;
+    double maxMagnitude = magnitudes[1];
+    for (int ii = 2; ii < n_size / 2; ii++) {
+        if (magnitudes[ii] > maxMagnitude) {
+            maxMagnitude = magnitudes[ii];
+            maxBin = ii;
+        }
+    }
+
+    // Calculate the dominant frequency
+    const double freqStep = hist->GetXaxis()->GetBinWidth(1);  // Bin width in x-axis units
+    const double dominantFreq = (maxBin * 1.0) / (n_size * freqStep); // Make sure division is correct
+
+    // Output the results
+    std::cout << "maxBin: " << maxBin << std::endl;
+    // std::cout << "Offset: " << offset << " ± " << offsetErr << std::endl;
+    std::cout << "Dominant Frequency: " << dominantFreq << std::endl;
+
+    // Plot the transformed spectrum (frequency vs magnitude)
+    TCanvas *c1 = new TCanvas("c1", "FFT Spectrum", 800, 600);
+    std::vector<double> frequencies(n_size / 2);
+
+    // Fill frequency values for the plot (frequency = bin index * frequency step)
+    for (int ii = 0; ii < n_size / 2; ii++) {
+        frequencies[ii] = ii / (n_size * freqStep);  // Frequency in Hz or other units
+    }
+
+    // Create a graph to plot magnitude vs frequency
+    TGraph *graph = new TGraph(n_size / 2, frequencies.data(), magnitudes.data());
+    graph->SetTitle("FFT Spectrum;Frequency (Hz);Magnitude");
+    graph->SetLineColor(kBlue);
+    graph->SetLineWidth(2);
+    graph->Draw("AL");
+
+    c1->Update();
+    
+    // Save the canvas as a PNG image
+    // c1->SaveAs("/outplot/fft_spectrum.png");
+    c1->SaveAs("fft_spectrum.png");
+    std::cout << "Saved FFT spectrum to /outplot/fft_spectrum.png" << std::endl;
+
+
+    // Clean up
+    delete[] in;
+    delete[] real;
+    delete[] imaginary;
+    delete fft;
+
+    return dominantFreq;
+}
+
+
 // Extract sine initial guesses  using ROOT's internal fitting
 void InitialGuess(double* params) { 
      auto sineFunc = [&](double* x, double* par) {
@@ -325,16 +428,19 @@ void InitialGuess(double* params) {
     
     // Initial guesses based on histogram data
     double maxVal = gHist->GetMaximum();
-    sineFit->SetParameters(maxVal, 5 * maxVal, 1e-3, 0);  // Guesses for amplitude, frequency, phase
+    // sineFit->SetParameters(maxVal, 5 * maxVal, 1e-3, 0);  // Guesses for amplitude, frequency, phase
 
-    // Adjust and relax parameter limits
-    sineFit->SetParLimits(0, 0, 1e9);  // Wider amplitude range
-    sineFit->SetParLimits(1, 0, 1e3);  // Frequency
-    sineFit->SetParLimits(3, 0, 2 * TMath::Pi()); // Phase
+    double freq = FFT(gHist);
+    sineFit->SetParameters(maxVal, 5 * maxVal, 2 * freq, 0);
 
-    // sineFit->SetParLimits(0, 0, 0);  // Wider amplitude range
-    // sineFit->SetParLimits(1, 0, 0);  // Frequency
-    // sineFit->SetParLimits(3, 0, 0); // Phase
+    // // Adjust and relax parameter limits
+    // sineFit->SetParLimits(0, 0, 1e9);  // Wider amplitude range
+    // sineFit->SetParLimits(1, 0, 1e3);  // Frequency
+    // sineFit->SetParLimits(3, 0, 2 * TMath::Pi()); // Phase
+
+    sineFit->SetParLimits(0, 0, 0);  // Wider amplitude range
+    sineFit->SetParLimits(1, 0, 0);  // Frequency
+    sineFit->SetParLimits(3, 0, 0); // Phase
 
     gHist->Fit(sineFit, "V");  // Verbose output
 
@@ -357,6 +463,7 @@ void InitialGuess(double* params) {
 
     delete sineFit;
 }
+
 
 int main() {
     // Redirect ROOT output to the log file
@@ -398,6 +505,9 @@ int main() {
     InitialGuess(guess);
 
     IterativeFit(guess, errors, 20, 1e-6); // Iteration number, Convergence threshold
+
+    // // Extract parameters from the histogram
+    // FFT(gHist);
 
     // Restore output to the default streams
     gSystem->RedirectOutput(0);
