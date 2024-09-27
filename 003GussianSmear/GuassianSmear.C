@@ -194,17 +194,17 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     // Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
     // Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 10 * params[4]); // Sigma
 
-    // Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 0);
-    // Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 0);  //Amplitude
-    // Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 0); //Frequency
-    // Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); //Phase
-    // Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 0); //Sigma
+    Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 , 0, 0);
+    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 , 0, 0);  //Amplitude
+    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 , 0, 0); //Frequency
+    Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); //Phase
+    Minuit.DefineParameter(4, "Sigma", params[4], 0.1, 0, 0); //Sigma
 
-    Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 0);
-    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 0);  // Amplitude
-    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 0); // Frequency
-    Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); // Phase
-    Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 0); // Sigma
+    // Minuit.DefineParameter(0, "Normalisation", params[0], TMath::Abs(0.1 * params[0]), 0, 0);
+    // Minuit.DefineParameter(1, "Amplitude", params[1], TMath::Abs(0.1 * params[1]), 0, 0);  // Amplitude
+    // Minuit.DefineParameter(2, "Frequency", params[2], TMath::Abs(0.1 * params[2]), 0, 0); // Frequency
+    // Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); // Phase
+    // Minuit.DefineParameter(4, "Sigma", params[4], TMath::Abs(0.1 * params[4]), 0, 0); // Sigma
 
 
     Minuit.Migrad();  // Perform the minimization
@@ -421,7 +421,7 @@ double FFT(TH1D *const hist) {
 // Extract sine initial guesses  using ROOT's internal fitting
 void InitialGuess(double* params) { 
      auto sineFunc = [&](double* x, double* par) {
-       return par[0] * Sine(x[0], par);  // Assuming Sine is already defined elsewhere
+       return TMath::Abs( par[0]) * Sine(x[0], par);  
     };
     
     TF1 *sineFit = new TF1("sineFit", sineFunc, 0, 50, 4);
