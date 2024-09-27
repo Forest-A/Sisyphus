@@ -54,6 +54,12 @@ void SmearSignal(TH1D *const hist, const double *params) {
         while (true) {
             const double xVal = gRand.Uniform(xMin, xMax);
             const double yVal = amp * TMath::Sin(freq * xVal + phase) + offset;
+	    // Protection: check if yVal is negative
+            if (yVal < 0) {
+                std::cerr << "Error: Negative yVal encountered (yVal = " << yVal 
+                          << ") at xVal = " << xVal << ". Check your parameters." << std::endl;
+                return;  // Exit function on error
+            }
             const double rr = gRand.Uniform(0, maxY); 
 
             // Acceptance criterion: accept the value if rr < yVal
@@ -75,8 +81,11 @@ double Sine(double xx, const double *params) {
   double p2 = TMath::Abs(params[2]); // frequency
   double p3 = TMath::Abs(params[3]); // phase
   double uu = 1 / (gkxMax - gkxMin) *
-    (1 + p1 / p2 * ((TMath::Cos(p2 * gkxMax + p3) - 
-                     TMath::Cos(p2 * gkxMin + p3))));
+    (1 + p1 / p2 * ((TMath::Cos(p2 * (gkxMax + p3)) - 
+                     TMath::Cos(p2 * (gkxMin + p3)))));
+
+  // double uu = 1 / (gkxMax - gkxMin);
+  
 
   //substitute p4 for params[3] in the sine function expression
   return p1 * TMath::Sin(p2 * (xx + p3)) + uu;
@@ -179,10 +188,17 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     Minuit.SetFCN(fcn);
 
     Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 10 * params[0]);
-    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 10 * params[1]+1);  // Amplitude
-    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 10 * params[2]+1); // Frequency
+    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 10 * params[1]);  // Amplitude
+    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 10 * params[2]); // Frequency
     Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
-    Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 10 * params[4]+1); // Sigma
+    Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 10 * params[4]); // Sigma
+
+    // Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 0);
+    // Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 0);  //Amplitude
+    // Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 0); //Frequency
+    // Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); //Phase
+    // Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 0); //Sigma
+
 
     Minuit.Migrad();  // Perform the minimization
 
@@ -309,12 +325,16 @@ void InitialGuess(double* params) {
     
     // Initial guesses based on histogram data
     double maxVal = gHist->GetMaximum();
-    sineFit->SetParameters(maxVal, 2, 3, 1);  // Guesses for amplitude, frequency, phase
+    sineFit->SetParameters(maxVal, 5 * maxVal, 1e-3, 0);  // Guesses for amplitude, frequency, phase
 
     // Adjust and relax parameter limits
     sineFit->SetParLimits(0, 0, 1e9);  // Wider amplitude range
     sineFit->SetParLimits(1, 0, 1e3);  // Frequency
     sineFit->SetParLimits(3, 0, 2 * TMath::Pi()); // Phase
+
+    // sineFit->SetParLimits(0, 0, 0);  // Wider amplitude range
+    // sineFit->SetParLimits(1, 0, 0);  // Frequency
+    // sineFit->SetParLimits(3, 0, 0); // Phase
 
     gHist->Fit(sineFit, "V");  // Verbose output
 
@@ -365,7 +385,9 @@ int main() {
     gHist = new TH1D("gHist", "Generated Noisy Sine Signal", 500, 0, 50);
 
     // Parameters for sine function and Gaussian noise
-    const double params[5] = {5, 2, 1, 1, 1}; // Normalisation, Amplitude, Frequency, Phase, Sigma
+    const double params[5] = {0.5, 2, 1, 1, 1}; // Normalisation, Amplitude, Frequency, Phase, Sigma
+    // const double params[5] = {0.5, 2, 50 * TMath::TwoPi() / 50, 1, 1}; // One period
+
 
     // Perform smearing of the sine signal with Gaussian noise
     SmearSignal(gHist, params);
