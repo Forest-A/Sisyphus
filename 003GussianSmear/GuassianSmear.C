@@ -188,17 +188,17 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     TMinuit Minuit(5);
     Minuit.SetFCN(fcn);
 
-    // Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 10 * params[0]);
-    // Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 10 * params[1]);  // Amplitude
-    // Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 10 * params[2]); // Frequency
-    // Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
-    // Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 10 * params[4]); // Sigma
+    Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 10 * params[0]);
+    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 10 * params[1]);  // Amplitude
+    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 10 * params[2]); // Frequency
+    Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
+    Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 10 * params[4]); // Sigma
 
-    Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 , 0, 0);
-    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 , 0, 0);  //Amplitude
-    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 , 0, 0); //Frequency
-    Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); //Phase
-    Minuit.DefineParameter(4, "Sigma", params[4], 0.1, 0, 0); //Sigma
+    // Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 , 0, 0);
+    // Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 , 0, 0);  //Amplitude
+    // Minuit.DefineParameter(2, "Frequency", params[2], 0.1 , 0, 0); //Frequency
+    // Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); //Phase
+    // Minuit.DefineParameter(4, "Sigma", params[4], 0.1, 0, 0); //Sigma
 
     // Minuit.DefineParameter(0, "Normalisation", params[0], TMath::Abs(0.1 * params[0]), 0, 0);
     // Minuit.DefineParameter(1, "Amplitude", params[1], TMath::Abs(0.1 * params[1]), 0, 0);  // Amplitude
@@ -225,6 +225,7 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
 
     return Minuit.GetStatus();  // Return fit status
 }
+
 
 // Plot the fit at each iteration and store it in the TList
 void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const double* errors) {
@@ -254,6 +255,26 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     fitFunc->SetLineWidth(3);
     fitFunc->SetNpx(1e5);
     fitFunc->Draw("same");
+
+    /////////////////////////////////////////
+
+
+    // double params1[4] = {5, 0.01, 2, 0};
+    // auto sineFunction = [&](double* x, double* par) {
+    //   double sine = (2e3 / 0.02) * (Sine(x[0], par) + 1/50);
+    //   return sine;
+    // };  
+        
+    // // Define sine function in ROOT's TF1 class
+    // TF1* fitFunc1 = new TF1("fitFunc", sineFunction, gkxMin, gkxMax, 4); // 4 parameters
+    // fitFunc1->SetParameters(params1); // Set parameters
+    // fitFunc1->SetNpx(1e5); // Set number of points for plotting
+
+    // // Draw the function
+    // fitFunc1->SetLineColor(kRed);
+    // fitFunc1->SetTitle("Sine Function");
+    // fitFunc1->Draw("same");
+
 
     // Legend
     const double x0 = 0.2;
@@ -420,27 +441,27 @@ double FFT(TH1D *const hist) {
 
 // Extract sine initial guesses  using ROOT's internal fitting
 void InitialGuess(double* params) { 
-     auto sineFunc = [&](double* x, double* par) {
-       return TMath::Abs( par[0]) * Sine(x[0], par);  
-    };
-    
-    TF1 *sineFit = new TF1("sineFit", sineFunc, 0, 50, 4);
+    //  auto sineFunc = [&](double* x, double* par) {
+    //    return TMath::Abs(par[0]) * Sine(x[0], par);  
+    // };
+
+    TF1 *sineFit = new TF1("sineFit", "[1] * TMath::Sin([2] *(x[0] + [3]))", 0, 50, 3);
     
     // Initial guesses based on histogram data
     double maxVal = gHist->GetMaximum();
     // sineFit->SetParameters(maxVal, 5 * maxVal, 1e-3, 0);  // Guesses for amplitude, frequency, phase
 
     double freq = FFT(gHist);
-    sineFit->SetParameters(maxVal, 5 * maxVal, 2 * freq, 0);
+    sineFit->SetParameters( maxVal, 2 * freq, 0);
 
     // // Adjust and relax parameter limits
     // sineFit->SetParLimits(0, 0, 1e9);  // Wider amplitude range
     // sineFit->SetParLimits(1, 0, 1e3);  // Frequency
     // sineFit->SetParLimits(3, 0, 2 * TMath::Pi()); // Phase
 
-    sineFit->SetParLimits(0, 0, 0);  // Wider amplitude range
-    sineFit->SetParLimits(1, 0, 0);  // Frequency
-    sineFit->SetParLimits(3, 0, 0); // Phase
+    // sineFit->SetParLimits(0, 0, 0);  // Wider amplitude range
+    // sineFit->SetParLimits(1, 0, 0);  // Frequency
+    // sineFit->SetParLimits(3, 0, 0); // Phase
 
     gHist->Fit(sineFit, "V");  // Verbose output
 
@@ -448,10 +469,10 @@ void InitialGuess(double* params) {
     // for (int ii = 0; ii < 3; ii++) {
     //     params[ii+1] = sineFit->GetParameter(ii);
     // }
-    params[0] = sineFit->GetParameter(0);
-    params[1] = sineFit->GetParameter(1);
-    params[2] = sineFit->GetParameter(2);
-    params[3] = sineFit->GetParameter(3);
+    params[0] = 1e3;
+    params[1] = sineFit->GetParameter(0);
+    params[2] = sineFit->GetParameter(1);
+    params[3] = sineFit->GetParameter(2);
     params[4] = 1e-6;  // Initial guess for sigma
 
     // Log the fit results and errors
@@ -463,7 +484,6 @@ void InitialGuess(double* params) {
 
     delete sineFit;
 }
-
 
 int main() {
     // Redirect ROOT output to the log file
@@ -492,14 +512,15 @@ int main() {
     gHist = new TH1D("gHist", "Generated Noisy Sine Signal", 500, 0, 50);
 
     // Parameters for sine function and Gaussian noise
-    const double params[5] = {0.5, 2, 1, 1, 1}; // Normalisation, Amplitude, Frequency, Phase, Sigma
-    // const double params[5] = {0.5, 2, 50 * TMath::TwoPi() / 50, 1, 1}; // One period
+    const double params[5] = {0.5, 2, 0, 1, 1}; // amp  freq  phase offset sigma 
+    
+    // const double params[5] = {0.5, 2, 5 * TMath::TwoPi() / 50, 1, 1}; // One period
 
 
     // Perform smearing of the sine signal with Gaussian noise
     SmearSignal(gHist, params);
 
-    double guess[5];
+    double guess[5]  = {0.5, 2, 1, 1, 1};
     double errors[5];
 
     InitialGuess(guess);
