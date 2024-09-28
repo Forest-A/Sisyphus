@@ -76,17 +76,27 @@ void SmearSignal(TH1D *const hist, const double *params) {
     }
 }
 
+// // Sine function
+// double Sine(double xx, const double *params) {
+//   double p1 = TMath::Abs(params[1]); // Amplitude
+//   double p2 = TMath::Abs(params[2]); // frequency
+//   double p3 = TMath::Abs(params[3]); // phase
+//   double uu = 1 / (gkxMax - gkxMin) *
+//     (1 + p1 / p2 * ((TMath::Cos(p2 * (gkxMax + p3)) - 
+//                      TMath::Cos(p2 * (gkxMin + p3)))));
+
+//   //substitute p4 for params[3] in the sine function expression
+//   return p1 * TMath::Sin(p2 * (xx + p3)) + uu;
+// }
+
 // Sine function
 double Sine(double xx, const double *params) {
-  double p1 = TMath::Abs(params[1]); // Amplitude
-  double p2 = TMath::Abs(params[2]); // frequency
-  double p3 = TMath::Abs(params[3]); // phase
+  double p1 = params[1]; // Amplitude
+  double p2 = params[2]; // frequency
+  double p3 = params[3]; // phase
   double uu = 1 / (gkxMax - gkxMin) *
     (1 + p1 / p2 * ((TMath::Cos(p2 * (gkxMax + p3)) - 
                      TMath::Cos(p2 * (gkxMin + p3)))));
-
-  // double uu = 1 / (gkxMax - gkxMin);
-  
 
   //substitute p4 for params[3] in the sine function expression
   return p1 * TMath::Sin(p2 * (xx + p3)) + uu;
@@ -133,7 +143,7 @@ double convolvedFunction(const double xx, const double *params) {
     const double x_min = xx - 5 * TMath::Abs(params[4]);
     const double x_max = xx + 5 * TMath::Abs(params[4]);
 
-    double result = params[0] * gIntegrator->Integral(x_min, x_max);
+    double result = params[0] * (gIntegrator->Integral(x_min, x_max));
   
     if (gIntegrator->Status() != 0) {
         std::cerr << "Warning: Integration failed for xx = " << xx << std::endl;
@@ -200,13 +210,6 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     // Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); //Phase
     // Minuit.DefineParameter(4, "Sigma", params[4], 0.1, 0, 0); //Sigma
 
-    // Minuit.DefineParameter(0, "Normalisation", params[0], TMath::Abs(0.1 * params[0]), 0, 0);
-    // Minuit.DefineParameter(1, "Amplitude", params[1], TMath::Abs(0.1 * params[1]), 0, 0);  // Amplitude
-    // Minuit.DefineParameter(2, "Frequency", params[2], TMath::Abs(0.1 * params[2]), 0, 0); // Frequency
-    // Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); // Phase
-    // Minuit.DefineParameter(4, "Sigma", params[4], TMath::Abs(0.1 * params[4]), 0, 0); // Sigma
-
-
     Minuit.Migrad();  // Perform the minimization
 
     // Retrieve fitted parameters
@@ -257,25 +260,12 @@ void PlotSineFit(const int iteration, TF1* fitFunc, const double* params, const 
     fitFunc->Draw("same");
 
     /////////////////////////////////////////
-
-
     // double params1[4] = {5, 0.01, 2, 0};
     // auto sineFunction = [&](double* x, double* par) {
     //   double sine = (2e3 / 0.02) * (Sine(x[0], par) + 1/50);
     //   return sine;
     // };  
         
-    // // Define sine function in ROOT's TF1 class
-    // TF1* fitFunc1 = new TF1("fitFunc", sineFunction, gkxMin, gkxMax, 4); // 4 parameters
-    // fitFunc1->SetParameters(params1); // Set parameters
-    // fitFunc1->SetNpx(1e5); // Set number of points for plotting
-
-    // // Draw the function
-    // fitFunc1->SetLineColor(kRed);
-    // fitFunc1->SetTitle("Sine Function");
-    // fitFunc1->Draw("same");
-
-
     // Legend
     const double x0 = 0.2;
     const double y0 = 0.6;
@@ -438,21 +428,35 @@ double FFT(TH1D *const hist) {
     return dominantFreq;
 }
 
-
 // Extract sine initial guesses  using ROOT's internal fitting
 void InitialGuess(double* params) { 
     //  auto sineFunc = [&](double* x, double* par) {
-    //    return TMath::Abs(par[0]) * Sine(x[0], par);  
+    //    return TMath::Abs(par[0]) * Sine(x, par);  
     // };
 
-    TF1 *sineFit = new TF1("sineFit", "[1] * TMath::Sin([2] *(x[0] + [3]))", 0, 50, 3);
-    
-    // Initial guesses based on histogram data
-    double maxVal = gHist->GetMaximum();
-    // sineFit->SetParameters(maxVal, 5 * maxVal, 1e-3, 0);  // Guesses for amplitude, frequency, phase
+    // TF1 *sineFit = new TF1("sineFit", sineFunc, 0, 50, 3);
 
+    // Define a TF1 object with the same sine formula
+    TF1* sineFit = new TF1("sineFunc", 
+        [](double* xx, double* params) {
+            double p1 = params[0];    // Amplitude
+            double p2 = params[1];    // Frequency
+            double p3 = params[2];    // Phase
+
+            // Compute the baseline shift (uu) based on gkxMin and gkxMax
+            double uu = 1 / (50 - 0) *
+                        (1 + p1 / p2 * (TMath::Cos(p2 * (50 + p3)) - 
+                                        TMath::Cos(p2 * (0 + p3))));
+
+            // Return the sine function with the baseline shift
+            return p1 * TMath::Sin(p2 * (xx[0] + p3)) + uu;
+        }, 0, 50, 3);  // Define 3 parameters: amplitude, frequency, phase
+    
+    // Initial guesses 
+    double maxVal = gHist->GetMaximum();
     double freq = FFT(gHist);
-    sineFit->SetParameters( maxVal, 2 * freq, 0);
+    
+    sineFit->SetParameters(maxVal, 2 * freq, 0);
 
     // // Adjust and relax parameter limits
     // sineFit->SetParLimits(0, 0, 1e9);  // Wider amplitude range
@@ -463,7 +467,7 @@ void InitialGuess(double* params) {
     // sineFit->SetParLimits(1, 0, 0);  // Frequency
     // sineFit->SetParLimits(3, 0, 0); // Phase
 
-    gHist->Fit(sineFit, "V");  // Verbose output
+    gHist->Fit(sineFit, "VM");  // Verbose output
 
     // // Extract fitted parameters and their errors
     // for (int ii = 0; ii < 3; ii++) {
@@ -520,7 +524,14 @@ int main() {
     // Perform smearing of the sine signal with Gaussian noise
     SmearSignal(gHist, params);
 
-    double guess[5]  = {0.5, 2, 1, 1, 1};
+        /////////////////////////////////////////
+    // double params1[4] = {5, 0.01, 2, 0};
+    // auto sineFunction = [&](double* x, double* par) {
+    //   double sine = (2e3 / 0.02) * (Sine(x[0], par) + 1/50);
+    //   return sine;
+    // };
+
+    double guess[5];
     double errors[5];
 
     InitialGuess(guess);
