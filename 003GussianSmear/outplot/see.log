@@ -139,7 +139,7 @@ Phase: 0 ± 0.000523136
         4  0.01998  -0.000 -0.020  1.000  0.000
         5  0.00004  -0.000  0.000  0.000  1.000
 ////////////////////////////Iteration 1: Chi2 = 7946.73///////////////////////////
-Iteration 1 took: 0.545124seconds (real time), 0.54 seconds (CPU time).
+Iteration 1 took: 0.545176seconds (real time), 0.55 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
@@ -197,6 +197,6 @@ Iteration 1 took: 0.545124seconds (real time), 0.54 seconds (CPU time).
         4  0.05950  -0.000 -0.060  1.000 -0.000
         5  0.00004  -0.000  0.000 -0.000  1.000
 ////////////////////////////Iteration 2: Chi2 = 7946.73///////////////////////////
-Iteration 2 took: 0.442775seconds (real time), 0.44 seconds (CPU time).
+Iteration 2 took: 0.463229seconds (real time), 0.45 seconds (CPU time).
 //////////////////////////////////////////////////////////////////////////////////
 Converged after 2 iterations.
