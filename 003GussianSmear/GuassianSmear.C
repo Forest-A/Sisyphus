@@ -76,30 +76,19 @@ void SmearSignal(TH1D *const hist, const double *params) {
     }
 }
 
-// // Sine function
-// double Sine(double xx, const double *params) {
-//   double p1 = TMath::Abs(params[1]); // Amplitude
-//   double p2 = TMath::Abs(params[2]); // frequency
-//   double p3 = TMath::Abs(params[3]); // phase
-//   double uu = 1 / (gkxMax - gkxMin) *
-//     (1 + p1 / p2 * ((TMath::Cos(p2 * (gkxMax + p3)) - 
-//                      TMath::Cos(p2 * (gkxMin + p3)))));
-
-//   //substitute p4 for params[3] in the sine function expression
-//   return p1 * TMath::Sin(p2 * (xx + p3)) + uu;
-// }
-
 // Sine function
 double Sine(double xx, const double *params) {
-  double p1 = params[1]; // Amplitude
-  double p2 = params[2]; // frequency
-  double p3 = params[3]; // phase
-  double uu = 1 / (gkxMax - gkxMin) *
-    (1 + p1 / p2 * ((TMath::Cos(p2 * (gkxMax + p3)) - 
-                     TMath::Cos(p2 * (gkxMin + p3)))));
+  const double p0 = TMath::Abs(params[0]);
+  const double p1 = TMath::Abs(params[1]); // Amplitude
+  const double p2 = TMath::Abs(params[2]); // frequency
+  const double p3 = TMath::Abs(params[3]); // phase
+  // const double uu = -1 / (gkxMax - gkxMin) *
+  //   (1 + p1 / p2 * ((TMath::Cos(p2 * (gkxMax + p3)) - 
+  //                    TMath::Cos(p2 * (gkxMin + p3)))));
+  const double uu = -(p2 - p1 * TMath::Cos(gkxMin * p2 + p3) + p1 * TMath::Cos(gkxMax * p2 + p3))/((gkxMin - gkxMax) * p2);
 
   //substitute p4 for params[3] in the sine function expression
-  return p1 * TMath::Sin(p2 * (xx + p3)) + uu;
+  return p0 * (p1 * TMath::Sin(p2 * xx + p3) + uu);
 }
 
 // Gaussian function
@@ -143,7 +132,7 @@ double convolvedFunction(const double xx, const double *params) {
     const double x_min = xx - 5 * TMath::Abs(params[4]);
     const double x_max = xx + 5 * TMath::Abs(params[4]);
 
-    double result = params[0] * (gIntegrator->Integral(x_min, x_max));
+    double result = (gIntegrator->Integral(x_min, x_max));
   
     if (gIntegrator->Status() != 0) {
         std::cerr << "Warning: Integration failed for xx = " << xx << std::endl;
@@ -395,30 +384,6 @@ double FFT(TH1D *const hist) {
     // std::cout << "Offset: " << offset << " ± " << offsetErr << std::endl;
     std::cout << "Dominant Frequency: " << dominantFreq << std::endl;
 
-    // Plot the transformed spectrum (frequency vs magnitude)
-    TCanvas *c1 = new TCanvas("c1", "FFT Spectrum", 800, 600);
-    std::vector<double> frequencies(n_size / 2);
-
-    // Fill frequency values for the plot (frequency = bin index * frequency step)
-    for (int ii = 0; ii < n_size / 2; ii++) {
-        frequencies[ii] = ii / (n_size * freqStep);  // Frequency in Hz or other units
-    }
-
-    // Create a graph to plot magnitude vs frequency
-    TGraph *graph = new TGraph(n_size / 2, frequencies.data(), magnitudes.data());
-    graph->SetTitle("FFT Spectrum;Frequency (Hz);Magnitude");
-    graph->SetLineColor(kBlue);
-    graph->SetLineWidth(2);
-    graph->Draw("AL");
-
-    c1->Update();
-    
-    // Save the canvas as a PNG image
-    // c1->SaveAs("/outplot/fft_spectrum.png");
-    c1->SaveAs("fft_spectrum.png");
-    std::cout << "Saved FFT spectrum to /outplot/fft_spectrum.png" << std::endl;
-
-
     // Clean up
     delete[] in;
     delete[] real;
@@ -427,6 +392,24 @@ double FFT(TH1D *const hist) {
 
     return dominantFreq;
 }
+
+double Norsine(double *xx, double *par)
+{
+  const double p0 = TMath::Abs(par[0]);
+  const double p1 = TMath::Abs(par[1]);
+  const double p2 = TMath::Abs(par[2]);
+  const double p3 = TMath::Abs(par[3]);
+
+  // const  double uu = -1 / (gkxMax - gkxMin) *
+  //   (1 + p1 / p2 * ((TMath::Cos(p2 * (gkxMax + p3)) - 
+  //                    TMath::Cos(p2 * (gkxMin + p3)))));
+
+  const double uu = -(p2 - p1 * TMath::Cos(gkxMin * p2 + p3) + p1 * TMath::Cos(gkxMax * p2 + p3))/((gkxMin - gkxMax) * p2);
+  
+  return p0*(p1*TMath::Sin(p2*xx[0]+p3) + uu);
+
+}
+
 
 // Extract sine initial guesses  using ROOT's internal fitting
 void InitialGuess(double* params) { 
@@ -437,26 +420,14 @@ void InitialGuess(double* params) {
     // TF1 *sineFit = new TF1("sineFit", sineFunc, 0, 50, 3);
 
     // Define a TF1 object with the same sine formula
-    TF1* sineFit = new TF1("sineFunc", 
-        [](double* xx, double* params) {
-            double p1 = params[0];    // Amplitude
-            double p2 = params[1];    // Frequency
-            double p3 = params[2];    // Phase
-
-            // Compute the baseline shift (uu) based on gkxMin and gkxMax
-            double uu = 1 / (50 - 0) *
-                        (1 + p1 / p2 * (TMath::Cos(p2 * (50 + p3)) - 
-                                        TMath::Cos(p2 * (0 + p3))));
-
-            // Return the sine function with the baseline shift
-            return p1 * TMath::Sin(p2 * (xx[0] + p3)) + uu;
-        }, 0, 50, 3);  // Define 3 parameters: amplitude, frequency, phase
+    TF1* sineFit = new TF1( "norsine", Norsine, gkxMin, gkxMax, 4);
     
-    // Initial guesses 
-    double maxVal = gHist->GetMaximum();
-    double freq = FFT(gHist);
-    
-    sineFit->SetParameters(maxVal, 2 * freq, 0);
+    // Initial guesses
+    const double norm = gHist->Integral(0,10000, "width");
+    const double maxVal = gHist->GetMaximum() / norm;
+    const double freq = TMath::TwoPi() * FFT(gHist);
+    const double fitParams[] = {norm, maxVal, freq, 0, 1};
+    sineFit->SetParameters(fitParams);
 
     // // Adjust and relax parameter limits
     // sineFit->SetParLimits(0, 0, 1e9);  // Wider amplitude range
@@ -467,16 +438,16 @@ void InitialGuess(double* params) {
     // sineFit->SetParLimits(1, 0, 0);  // Frequency
     // sineFit->SetParLimits(3, 0, 0); // Phase
 
-    gHist->Fit(sineFit, "VM");  // Verbose output
+    gHist->Fit(sineFit, "V");  // Verbose output
 
     // // Extract fitted parameters and their errors
     // for (int ii = 0; ii < 3; ii++) {
     //     params[ii+1] = sineFit->GetParameter(ii);
     // }
-    params[0] = 1e3;
-    params[1] = sineFit->GetParameter(0);
-    params[2] = sineFit->GetParameter(1);
-    params[3] = sineFit->GetParameter(2);
+    params[0] = sineFit->GetParameter(0);
+    params[1] = sineFit->GetParameter(1);
+    params[2] = sineFit->GetParameter(2);
+    params[3] = sineFit->GetParameter(3);
     params[4] = 1e-6;  // Initial guess for sigma
 
     // Log the fit results and errors
