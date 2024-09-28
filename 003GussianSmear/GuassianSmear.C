@@ -187,11 +187,11 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     TMinuit Minuit(5);
     Minuit.SetFCN(fcn);
 
-    Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 * params[0], 0, 10 * params[0]);
-    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 * params[1], 0, 10 * params[1]);  // Amplitude
-    Minuit.DefineParameter(2, "Frequency", params[2], 0.1 * params[2], 0, 10 * params[2]); // Frequency
+    Minuit.DefineParameter(0, "Normalisation", params[0], 0.1, 0, 0);
+    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1, 0, 0);  // Amplitude
+    Minuit.DefineParameter(2, "Frequency", params[2], 0.1, 0, 0); // Frequency
     Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
-    Minuit.DefineParameter(4, "Sigma", params[4], 0.1 * params[4], 0, 10 * params[4]); // Sigma
+    Minuit.DefineParameter(4, "Sigma", params[4], 1, 0, 0); // Sigma
 
     // Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 , 0, 0);
     // Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 , 0, 0);  //Amplitude
