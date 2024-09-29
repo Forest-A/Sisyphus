@@ -82,10 +82,10 @@ double Sine(double xx, const double *params) {
   const double p1 = TMath::Abs(params[1]); // Amplitude
   const double p2 = TMath::Abs(params[2]); // frequency
   const double p3 = TMath::Abs(params[3]); // phase
-  // const double uu = -1 / (gkxMax - gkxMin) *
-  //   (1 + p1 / p2 * ((TMath::Cos(p2 * (gkxMax + p3)) - 
-  //                    TMath::Cos(p2 * (gkxMin + p3)))));
-  const double uu = -(p2 - p1 * TMath::Cos(gkxMin * p2 + p3) + p1 * TMath::Cos(gkxMax * p2 + p3))/((gkxMin - gkxMax) * p2);
+  const double uu = 1 / (gkxMax - gkxMin) *
+    (1 + p1 / p2 * ((TMath::Cos(p2 * gkxMax + p3) - 
+                     TMath::Cos(p2 * gkxMin + p3))));
+  // const double uu = -(p2 - p1 * TMath::Cos(gkxMin * p2 + p3) + p1 * TMath::Cos(gkxMax * p2 + p3))/((gkxMin - gkxMax) * p2);
 
   //substitute p4 for params[3] in the sine function expression
   return p0 * (p1 * TMath::Sin(p2 * xx + p3) + uu);
@@ -188,15 +188,15 @@ int SingleFit(TF1* fitFunc, double* const params, double* const errors, double& 
     Minuit.SetFCN(fcn);
 
     Minuit.DefineParameter(0, "Normalisation", params[0], 0.1, 0, 0);
-    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1, 0, 0);  // Amplitude
-    Minuit.DefineParameter(2, "Frequency", params[2], 0.1, 0, 0); // Frequency
-    Minuit.DefineParameter(3, "Phase", params[3], 0.1, -TMath::Pi(), TMath::Pi()); // Phase
-    Minuit.DefineParameter(4, "Sigma", params[4], 1, 0, 0); // Sigma
+    Minuit.DefineParameter(1, "Amplitude", params[1], 0.1, 0, 0);  
+    Minuit.DefineParameter(2, "Frequency", params[2], 0.1, 0, 0); 
+    Minuit.DefineParameter(3, "Phase", params[3], 0.5, 0, 0); 
+    Minuit.DefineParameter(4, "Sigma", params[4], 1, 0, 0); 
 
     // Minuit.DefineParameter(0, "Normalisation", params[0], 0.1 , 0, 0);
     // Minuit.DefineParameter(1, "Amplitude", params[1], 0.1 , 0, 0);  //Amplitude
     // Minuit.DefineParameter(2, "Frequency", params[2], 0.1 , 0, 0); //Frequency
-    // Minuit.DefineParameter(3, "Phase", params[3], 0.1, 0, 0); //Phase
+    // Minuit.DefineParameter(3, "Phase", params[3], 0.5, 0, 0); //Phase
     // Minuit.DefineParameter(4, "Sigma", params[4], 0.1, 0, 0); //Sigma
 
     Minuit.Migrad();  // Perform the minimization
@@ -487,7 +487,7 @@ int main() {
     gHist = new TH1D("gHist", "Generated Noisy Sine Signal", 500, 0, 50);
 
     // Parameters for sine function and Gaussian noise
-    const double params[5] = {0.5, 2, 0, 1, 1}; // amp  freq  phase offset sigma 
+    const double params[5] = {0.5, 2, 2, 1, 1}; // amp  freq  phase offset sigma 
     
     // const double params[5] = {0.5, 2, 5 * TMath::TwoPi() / 50, 1, 1}; // One period
 
@@ -507,7 +507,7 @@ int main() {
 
     InitialGuess(guess);
 
-    IterativeFit(guess, errors, 20, 1e-6); // Iteration number, Convergence threshold
+    IterativeFit(guess, errors, 20, 1e-9); // Iteration number, Convergence threshold
 
     // // Extract parameters from the histogram
     // FFT(gHist);
