@@ -12,16 +12,14 @@ compile() {
         exit 1
     fi
 
-    g++ -g -O3 -Wall -Werror -std=c++17 -fPIC -o "$output" "$code" $(root-config --cflags --libs) -lTree -lMinuit -lASImage -L/home/motoko/TKI_Comparison/style -lstyle -Wl,-rpath=/home/motoko/TKI_Comparison/style
-
-
+    g++ -g -O3 -Wall -Werror -std=c++17 -fPIC -o "$output" "$code" $(root-config --cflags --libs) -lTree -lMinuit -lASImage -L/home/motoko/TKI_Comparison/style -lstyle  -I/home/motoko/TKI_Comparison/style
 
     if [ -e "$output" ]; then
         echo "Compilation successful: $output"
     else
         echo "Compilation failed"
         exit 1
-    fi
+    fi 
 }
 
 # Check for the correct number of arguments
