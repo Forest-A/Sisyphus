@@ -7,96 +7,51 @@
 #include <THStack.h>
 #include <Math/Integrator.h>
 #include <Math/IntegratorOptions.h>
+#include <TLegend.h>
 
 ROOT::Math::IntegratorOneDim *gIntegrator = nullptr;
 
-double noscil(const Double_t xx){
-
-  // Electron antineutrino flux from the neutrino
-  double flux = 0.58 * exp(0.870 - 0.160 * xx - 0.091 * xx * xx)
-              + 0.30 * exp(0.896 - 0.239 * xx - 0.0981 * xx * xx)
-              + 0.07 * exp(0.976 - 0.162 * xx - 0.0790 * xx * xx)
-              + 0.05 * exp(0.793 - 0.080 * xx - 0.1085 * xx * xx);
-  
-  // Positron energy (MeV)
-  double Ee = xx - ( 939.565 - 938.272);
-
-  // Positron momentum (Mev)
-  double Pe = sqrt(Ee * Ee - 0.511 * 0.511);
-
-  // Inverse beta-decay cross section (leading-order expression) (cm^2)
-  double crossSec = 0.0952e-42 * Ee * Pe;
-
-  return flux * crossSec;
-
-}
-
-// double oscil(Double_t *xx){
-
-//   // Electron antineutrino flux from the neutrino
-//   double flux = 0.58 * exp(0.870 - 0.160 * xx - 0.091 * xx * xx)
-//               + 0.30 * exp(0.896 - 0.239 * xx - 0.0981 * xx * xx)
-//               + 0.07 * exp(0.976 - 0.162 * xx - 0.0790 * xx * xx)
-//               + 0.05 * exp(0.793 - 0.080 * xx - 0.1085 * xx * xx);
-  
-//   // Positron energy (MeV)
-//   double Ee = xx - (939.565 - 938.272);
-//   // Positron momentum (Mev)
-//   double Pe = sqrt(Ee * Ee - 0.511 * 0.511);
-//   // Inverse beta-decay cross section (leading-order expression) (cm^2)
-//   double crossSec = 0.0952e-42 * Ee * Pe;
-
-//   /////////////////////////////////////////////////
-//   //https://pdg.lbl.gov/2024/listings/rpp2024-list-neutrino-mixing.pdf
-//   const double theta12 = 0.587; // radian
-//   const double theta13 = 0.1485;
-
-//   const double m21 = 7.53e-5; //eV2
-//   const double m32 = 2.455e-3; //NO
-//   const double m31 = 2.463e-3;
-
-//   const double delta21 = 1.27 * m21 * 52.5e3 / xx; //52.5 km baseline 
-//   const double delta32 = 1.27 * m32 * 52.5e3 / xx;
-//   const double delta31 = 1.27 * m31 * 52.5e3 / xx;
-//   ////////////////////////////////////////////////
-  
-//   double P21 = pow(cos(theta13), 4)
-//              * pow(sin(2 * theta12), 2)
-//              * pow(sin(delta21), 2);
-
-//   double P31 = pow(cos(theta12), 2)
-//              * pow(sin(2 * theta13), 2)
-//              * pow(sin(delta31), 2);
-
-//   double P32 = pow(sin(theta12), 2)
-//              * pow(sin(2 * theta13), 2)
-//              * pow(sin(delta32), 2);
-
-//   double prob = 1 - P21 - P31 - P32;
-
-//   return flux * crossSec * prob;
-
-// }
-
-double oscil(const double xx) {
-
+double noscil(const double xx) {
     // Ensure xx is not zero to avoid division by zero
     if (xx <= 0) {
         std::cerr << "Warning: xx must be greater than 0. Received: " << xx << std::endl;
         return 0; // Return zero or handle the error as needed
     }
-    
-    // Electron antineutrino flux from the neutrino
+
+    // Electron antineutrino flux from the reactor
     double flux = 0.58 * exp(0.870 - 0.160 * xx - 0.091 * xx * xx)
                 + 0.30 * exp(0.896 - 0.239 * xx - 0.0981 * xx * xx)
                 + 0.07 * exp(0.976 - 0.162 * xx - 0.0790 * xx * xx)
                 + 0.05 * exp(0.793 - 0.080 * xx - 0.1085 * xx * xx);
-  
+
     // Positron energy (MeV)
     double Ee = xx - (939.565 - 938.272);
     // Positron momentum (MeV)
     double Pe = sqrt(Ee * Ee - 0.511 * 0.511);
-    // Inverse beta-decay cross section (leading-order expression) (cm^2)
+    // Inverse beta-decay cross section (cm^2)
+    double crossSec = 0.0952e-42 * Ee * Pe;
+
+    return flux * crossSec; // Return non-oscillating result
+}
+
+double oscil(const double xx) {
+    // Ensure xx is not zero to avoid division by zero
+    if (xx <= 0) {
+        std::cerr << "Warning: xx must be greater than 0. Received: " << xx << std::endl;
+        return 0; // Return zero or handle the error as needed
+    }
+
+    // Electron antineutrino flux from the reactor
+    double flux = 0.58 * exp(0.870 - 0.160 * xx - 0.091 * xx * xx)
+                + 0.30 * exp(0.896 - 0.239 * xx - 0.0981 * xx * xx)
+                + 0.07 * exp(0.976 - 0.162 * xx - 0.0790 * xx * xx)
+                + 0.05 * exp(0.793 - 0.080 * xx - 0.1085 * xx * xx);
+
+    // Positron energy (MeV)
+    double Ee = xx - (939.565 - 938.272);
+    // Positron momentum (MeV)
+    double Pe = sqrt(Ee * Ee - 0.511 * 0.511);
+    // Inverse beta-decay cross section (cm^2)
     double crossSec = 0.0952e-42 * Ee * Pe;
 
     // Neutrino mixing parameters
@@ -118,72 +73,77 @@ double oscil(const double xx) {
 
     double prob = 1 - P21 - P31 - P32;
 
-    return flux * crossSec * prob;
+    return flux * crossSec * prob; 
 }
 
 // Initialize the integrator and set the function once
 void InitializeIntegrator() {
     if (!gIntegrator) {
         gIntegrator = new ROOT::Math::IntegratorOneDim(ROOT::Math::IntegrationOneDim::kADAPTIVESINGULAR);
-        if (gIntegrator) {
-            gIntegrator->SetRelTolerance(1e-4);
-            gIntegrator->SetFunction(oscil);  // Set the function only once
+        gIntegrator->SetRelTolerance(1e-4);
+    }
+}
+
+void plotSpectrum() {
+    // Initialize the integrator
+    InitializeIntegrator();
+
+    // Create histograms for the non-oscillating and oscillating spectra
+    TH1F *hist1 = new TH1F("hist1", "Non-Oscillating Reactor Neutrino Spectrum", 200, 0, 10); // MeV
+    TH1F *hist2 = new TH1F("hist2", "Oscillating Reactor Neutrino Spectrum", 200, 0, 10); // MeV
+
+    // Normalisation factor
+    double norm = 0;
+
+    // Fill the histograms
+    for (int ii = 1; ii <= hist1->GetNbinsX(); ii++) {
+        double xx = hist1->GetXaxis()->GetBinCenter(ii);
+        if (xx > 1.8) {
+            hist1->SetBinContent(ii, noscil(xx));
+            hist2->SetBinContent(ii, oscil(xx));
+        } else {
+            hist1->SetBinContent(ii, 0);
+            hist2->SetBinContent(ii, 0);
         }
-        else {
-            std::cerr << "Error: Failed to initialize the integrator!" << std::endl;
-        }
     }
+
+    // Calculate the integrals for normalization
+    norm = hist1->Integral();
+
+    // Normalize the histograms
+    if (norm > 0){
+     hist1->Scale(1.0 / norm);
+     hist2->Scale(1.0 / norm);
+    }
+
+    // Create a canvas and draw the histograms
+    TCanvas *c1 = new TCanvas("c1", "Canvas", 800, 600);
+    hist1->SetLineColor(kBlue);
+    hist1->SetLineWidth(2);
+    hist1->Draw("HIST");
+    
+    hist2->SetLineColor(kRed);
+    hist2->SetLineWidth(2);
+    hist2->Draw("HIST SAME");
+
+    // Add a legend
+    TLegend *legend = new TLegend(0.7, 0.7, 0.9, 0.9);
+    legend->AddEntry(hist1, "Non-Oscillating", "f");
+    legend->AddEntry(hist2, "NO Oscillating", "f");
+    legend->Draw();
+
+
+    hist1->SetTitle("Normalized Reactor Neutrino Spectrum; Energy (MeV); Normalized Count");
+    c1->SaveAs("spectrum.png");
+
+    delete c1; 
 }
 
-void plotSpectrum(){
-
-  double EE1 = 0;
-  double EE2 = 0;
-
-  if (!gIntegrator) {
-        InitializeIntegrator();
-    }
-  
-  // double integral = gIntegrator->Integral(1.8, 10);
-  // std::cout<< integral << std::endl;
-
-  auto hs = new THStack("hs","Reactor Neutrino Spectrum");
-  TH1F *hist1 = new TH1F("hist", "Non-Oscillating Reactor Neutrino Spectrum", 200, 0, 10); // MeV
-  TH1F *hist2 = new TH1F("hist", "Non-Oscillating Reactor Neutrino Spectrum", 200, 0, 10); // MeV
-
-  for(int ii = 0; ii < 200; ii++){
-
-    double xx = hist1->GetXaxis()->GetBinCenter(ii);
-    if(xx > 1.8){
-      EE1 = noscil(xx);
-      EE2 = gIntegrator->Integral(1.8, 10);
-    }
-    else{
-      EE1 = 0;
-      EE2 = 0;
-    }
-
-    // hist->Fill(xx, EE);
-    hist1->SetBinContent(ii, EE1);
-    hist2->SetBinContent(ii, EE2);
-  
-  }
-
-  TCanvas *c1 = new TCanvas("c1", "Canvas", 800, 600);
-  hs->Add(hist1);
-  hs->Add(hist2);
-  hs->Draw();
-  c1->SaveAs("spectrum.png");
-  
+int main() {
+    plotSpectrum();
+    return 0;
 }
 
-
-int main(){
-
-  plotSpectrum();
-  
-  return 0;
-}
 
 
 
